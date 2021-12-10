@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:kikiapp/login.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);

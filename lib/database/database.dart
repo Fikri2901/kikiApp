@@ -75,7 +75,9 @@ class MongoDatabase {
 
   //================== LOGIN ========================//
 
-  static loginAdmin(nama) async {
-    await userCollection.findOne({"nama": nama});
+  static loginAdmin(User user) async {
+    final users = await userCollection
+        .findOne({"nama": user.nama.toLowerCase(), "password": user.password});
+    return users;
   }
 }

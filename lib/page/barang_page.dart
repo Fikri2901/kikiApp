@@ -5,6 +5,7 @@ import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/jenis.dart';
 // ignore: unused_import
 import 'package:mongo_dart/mongo_dart.dart' as M;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'add_barang_page.dart';
 
@@ -16,9 +17,11 @@ class BarangPage extends StatefulWidget {
 }
 
 class _BarangPageState extends State<BarangPage> {
+  String _admin = "";
   @override
   void initState() {
     super.initState();
+    _panggilAdmin();
   }
 
   @override
@@ -59,16 +62,18 @@ class _BarangPageState extends State<BarangPage> {
                     ),
                   ),
                 ),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return AddBarangPage(
-                          nama: jenis.nama, idJenis: jenis.id.toJson());
-                    })).then((value) => setState(() {}));
-                  },
-                  child: Icon(Icons.add),
-                ),
+                floatingActionButton: _admin == 'kikicell'
+                    ? FloatingActionButton(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (BuildContext context) {
+                            return AddBarangPage(
+                                nama: jenis.nama, idJenis: jenis.id.toJson());
+                          })).then((value) => setState(() {}));
+                        },
+                        child: Icon(Icons.add),
+                      )
+                    : null,
               );
             } else {
               return Scaffold(
@@ -79,13 +84,49 @@ class _BarangPageState extends State<BarangPage> {
                   itemCount: snapshot.data.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: BarangCard(
-                        barang: Barang.fromMap(snapshot.data[index]),
-                        onLongDelete: () {
-                          showAlertHapus(Barang.fromMap(snapshot.data[index]));
-                        },
-                        onTapEdit: () async {
+                        padding: const EdgeInsets.all(8.0),
+                        child: _admin == 'kikicell'
+                            ? BarangCard(
+                                barang: Barang.fromMap(snapshot.data[index]),
+                                txtAdmin: _admin,
+                                onLongDelete: () {
+                                  showAlertHapus(
+                                      Barang.fromMap(snapshot.data[index]));
+                                },
+                                onTapEdit: () async {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) {
+                                        return AddBarangPage(
+                                            nama: jenis.nama,
+                                            idJenis: jenis.id.toJson());
+                                      },
+                                      settings: RouteSettings(
+                                        arguments: Barang.fromMap(
+                                            snapshot.data[index]),
+                                      ),
+                                    ),
+                                  ).then((value) => setState(() {}));
+                                },
+                                onPress: () {
+                                  showDetail(
+                                      Barang.fromMap(snapshot.data[index]));
+                                },
+                              )
+                            : BarangCard(
+                                barang: Barang.fromMap(snapshot.data[index]),
+                                txtAdmin: _admin,
+                                onPress: () {
+                                  showDetail(
+                                      Barang.fromMap(snapshot.data[index]));
+                                },
+                              ));
+                  },
+                ),
+                floatingActionButton: _admin == 'kikicell'
+                    ? FloatingActionButton(
+                        onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -94,34 +135,68 @@ class _BarangPageState extends State<BarangPage> {
                                     nama: jenis.nama,
                                     idJenis: jenis.id.toJson());
                               },
-                              settings: RouteSettings(
-                                arguments: Barang.fromMap(snapshot.data[index]),
-                              ),
                             ),
                           ).then((value) => setState(() {}));
                         },
-                      ),
-                    );
-                  },
-                ),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) {
-                          return AddBarangPage(
-                              nama: jenis.nama, idJenis: jenis.id.toJson());
-                        },
-                      ),
-                    ).then((value) => setState(() {}));
-                  },
-                  child: Icon(Icons.add),
-                ),
+                        child: Icon(Icons.add),
+                      )
+                    : null,
               );
             }
           }
         });
+  }
+
+  void _panggilAdmin() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    setState(() {
+      if (pref.getString('admin') != null) {
+        _admin = pref.getString('admin');
+      }
+    });
+  }
+
+  showDetail(Barang barang) {
+    Widget cancelButton = TextButton(
+      child: Text("Kembali"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Detail ${barang.nama}"),
+      content: Container(
+        height: 100.0,
+        child: Column(
+          children: [
+            Text(
+              "Harga Ecer : ${barang.harga_ecer}",
+              textAlign: TextAlign.left,
+            ),
+            Text(
+              "Harga Grosir : ${barang.harga_grosir}",
+              textAlign: TextAlign.left,
+            ),
+            Text(
+              "Update : ${barang.tanggal_update}",
+              textAlign: TextAlign.left,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   showAlertHapus(Barang barang) {
@@ -137,9 +212,12 @@ class _BarangPageState extends State<BarangPage> {
         await MongoDatabase.deleteBarang(barang);
         setState(() {});
         Navigator.of(context).pop();
-        final hapus =
-            SnackBar(content: Text('${barang.nama} Sudah terhapus !!'));
-        ScaffoldMessenger.of(context).showSnackBar(hapus);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${barang.nama} Sudah terhapus !!'),
+          ),
+        );
       },
     );
 

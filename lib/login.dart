@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/user.dart';
+import 'package:kikiapp/navbarButtom.dart';
 import 'package:mongo_dart/mongo_dart.dart' as M;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -14,9 +16,12 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController namaController = TextEditingController();
   TextEditingController passController = TextEditingController();
   bool _validasi = false;
+
   @override
-  void initState() {
-    super.initState();
+  void dispose() {
+    super.dispose();
+    namaController.dispose();
+    passController.dispose();
   }
 
   @override
@@ -119,23 +124,30 @@ class _LoginPageState extends State<LoginPage> {
       return null;
   }
 
-  login() {
-    final String nama = namaController.text;
-    final String pass = passController.text;
-    // final ll = User(id: M.ObjectId(), nama: nama, password: pass);
-    // var validasi = await MongoDatabase.loginAdmin(nama);
-    // if (validasi != null) {
-    //   Navigator.pop(context);
-    //   final tampil = SnackBar(content: Text('login Berhasil'));
-    //   ScaffoldMessenger.of(context).showSnackBar(tampil);
-    // } else {
-    //   print(validasi);
-    //   final tampil = SnackBar(content: Text('LOGIN GAGAL !!'));
-    //   ScaffoldMessenger.of(context).showSnackBar(tampil);
-    // }
+  login() async {
+    final ll = User(nama: namaController.text, password: passController.text);
+    var validasi = await MongoDatabase.loginAdmin(ll);
+    if (validasi != null) {
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      await pref.setString('admin', validasi['nama']);
 
-    Navigator.pop(context);
-    final tampil = SnackBar(content: Text('login ${nama} Berhasil'));
-    ScaffoldMessenger.of(context).showSnackBar(tampil);
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+        builder: (BuildContext context) {
+          return NavbarButtom();
+        },
+      ), (route) => false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login Admin Berhasil'),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('LOGIN GAGAL !!'),
+        ),
+      );
+    }
   }
 }
