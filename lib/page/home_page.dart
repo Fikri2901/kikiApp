@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:kikiapp/login.dart';
 import 'package:kikiapp/models/jenis.dart';
@@ -17,10 +19,25 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  List<Jenis> _searchResult = [];
+  List<Jenis> _jenis = [];
   String _admin = "";
+
+  TextEditingController cari = new TextEditingController();
+
+  Future<Null> getJenis() async {
+    final response = await MongoDatabase.getDocumentJenis();
+    setState(() {
+      for (Map jenis in response) {
+        _jenis.add(Jenis.fromMap(jenis));
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    getJenis();
     _panggilAdmin();
   }
 
@@ -49,6 +66,70 @@ class _HomepageState extends State<Homepage> {
     }
   }
 
+  Widget _jenisResult() {
+    return new ListView.builder(
+      itemCount: _searchResult.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _admin == 'kikicell'
+              ? JenisCard(
+                  jenis: Jenis.fromMap(_searchResult[index].toMap()),
+                  txtAdmin: _admin,
+                  onLongDelete: () {
+                    showAlertHapus(Jenis.fromMap(_searchResult[index].toMap()));
+                  },
+                  onTapEdit: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return AddJenisPage();
+                        },
+                        settings: RouteSettings(
+                          arguments:
+                              Jenis.fromMap(_searchResult[index].toMap()),
+                        ),
+                      ),
+                    ).then((value) => setState(() {}));
+                  },
+                  onTapListBarang: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return BarangPage();
+                        },
+                        settings: RouteSettings(
+                          arguments:
+                              Jenis.fromMap(_searchResult[index].toMap()),
+                        ),
+                      ),
+                    ).then((value) => setState(() {}));
+                  },
+                )
+              : JenisCard(
+                  jenis: Jenis.fromMap(_searchResult[index].toMap()),
+                  onTapListBarang: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return BarangPage();
+                        },
+                        settings: RouteSettings(
+                          arguments:
+                              Jenis.fromMap(_searchResult[index].toMap()),
+                        ),
+                      ),
+                    ).then((value) => setState(() {}));
+                  },
+                ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -56,20 +137,48 @@ class _HomepageState extends State<Homepage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
-              appBar: AppBar(
-                title: Text('Barang'),
-                centerTitle: true,
-                actions: <Widget>[_tombol()],
-              ),
-              body: Center(
-                child: Container(
-                  color: Colors.white,
-                  child: const CircularProgressIndicator(
-                    backgroundColor: Colors.black,
-                  ),
+                appBar: AppBar(
+                  title: Text('Barang'),
+                  centerTitle: true,
+                  actions: <Widget>[_tombol()],
                 ),
-              ),
-            );
+                body: Column(
+                  children: <Widget>[
+                    new Container(
+                      color: Theme.of(context).primaryColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: new Card(
+                          child: new ListTile(
+                            leading: new Icon(Icons.search),
+                            title: new TextField(
+                              controller: cari,
+                              decoration: new InputDecoration(
+                                  hintText: 'Search', border: InputBorder.none),
+                              onChanged: onSearchJenis,
+                            ),
+                            trailing: new IconButton(
+                              icon: new Icon(Icons.cancel),
+                              onPressed: () {
+                                cari.clear();
+                                onSearchJenis('');
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 300.0,
+                      color: Colors.white,
+                      child: Center(
+                        child: const CircularProgressIndicator(
+                          backgroundColor: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ));
           } else {
             if (snapshot.hasError) {
               return Scaffold(
@@ -128,70 +237,111 @@ class _HomepageState extends State<Homepage> {
                   centerTitle: true,
                   actions: <Widget>[_tombol()],
                 ),
-                body: RefreshIndicator(
-                  onRefresh: refreshJenis,
-                  child: ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
+                body: Column(
+                  children: <Widget>[
+                    new Container(
+                      color: Theme.of(context).primaryColor,
+                      child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: _admin == 'kikicell'
-                            ? JenisCard(
-                                jenis: Jenis.fromMap(snapshot.data[index]),
-                                txtAdmin: _admin,
-                                onLongDelete: () {
-                                  showAlertHapus(
-                                      Jenis.fromMap(snapshot.data[index]));
-                                },
-                                onTapEdit: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) {
-                                        return AddJenisPage();
-                                      },
-                                      settings: RouteSettings(
-                                        arguments:
-                                            Jenis.fromMap(snapshot.data[index]),
-                                      ),
-                                    ),
-                                  ).then((value) => setState(() {}));
-                                },
-                                onTapListBarang: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) {
-                                        return BarangPage();
-                                      },
-                                      settings: RouteSettings(
-                                        arguments:
-                                            Jenis.fromMap(snapshot.data[index]),
-                                      ),
-                                    ),
-                                  ).then((value) => setState(() {}));
-                                },
-                              )
-                            : JenisCard(
-                                jenis: Jenis.fromMap(snapshot.data[index]),
-                                onTapListBarang: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) {
-                                        return BarangPage();
-                                      },
-                                      settings: RouteSettings(
-                                        arguments:
-                                            Jenis.fromMap(snapshot.data[index]),
-                                      ),
-                                    ),
-                                  ).then((value) => setState(() {}));
+                        child: new Card(
+                          child: new ListTile(
+                            leading: new Icon(Icons.search),
+                            title: new TextField(
+                              controller: cari,
+                              decoration: new InputDecoration(
+                                  hintText: 'Cari jenis',
+                                  border: InputBorder.none),
+                              onChanged: onSearchJenis,
+                            ),
+                            trailing: new IconButton(
+                              icon: new Icon(Icons.cancel),
+                              onPressed: () {
+                                cari.clear();
+                                onSearchJenis('');
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    new Expanded(
+                      child: _searchResult.length != 0 || cari.text.isNotEmpty
+                          ? _jenisResult()
+                          : RefreshIndicator(
+                              onRefresh: refreshJenis,
+                              child: new ListView.builder(
+                                itemCount: snapshot.data.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: _admin == 'kikicell'
+                                        ? JenisCard(
+                                            jenis: Jenis.fromMap(
+                                                snapshot.data[index]),
+                                            txtAdmin: _admin,
+                                            onLongDelete: () {
+                                              showAlertHapus(Jenis.fromMap(
+                                                  snapshot.data[index]));
+                                            },
+                                            onTapEdit: () async {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AddJenisPage();
+                                                  },
+                                                  settings: RouteSettings(
+                                                    arguments: Jenis.fromMap(
+                                                        snapshot.data[index]),
+                                                  ),
+                                                ),
+                                              ).then(
+                                                  (value) => setState(() {}));
+                                            },
+                                            onTapListBarang: () async {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return BarangPage();
+                                                  },
+                                                  settings: RouteSettings(
+                                                    arguments: Jenis.fromMap(
+                                                        snapshot.data[index]),
+                                                  ),
+                                                ),
+                                              ).then(
+                                                  (value) => setState(() {}));
+                                            },
+                                          )
+                                        : JenisCard(
+                                            jenis: Jenis.fromMap(
+                                                snapshot.data[index]),
+                                            onTapListBarang: () async {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return BarangPage();
+                                                  },
+                                                  settings: RouteSettings(
+                                                    arguments: Jenis.fromMap(
+                                                        snapshot.data[index]),
+                                                  ),
+                                                ),
+                                              ).then(
+                                                  (value) => setState(() {}));
+                                            },
+                                          ),
+                                  );
                                 },
                               ),
-                      );
-                    },
-                  ),
+                            ),
+                    )
+                  ],
                 ),
                 floatingActionButton: _admin == 'kikicell'
                     ? FloatingActionButton(
@@ -208,6 +358,22 @@ class _HomepageState extends State<Homepage> {
             }
           }
         });
+  }
+
+  onSearchJenis(String text) async {
+    _searchResult.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    _jenis.forEach((Jenis jenis) {
+      if (jenis.nama.toLowerCase().contains(text)) {
+        _searchResult.add(jenis);
+      }
+    });
+
+    setState(() {});
   }
 
   Future refreshJenis() async {
