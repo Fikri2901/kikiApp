@@ -31,20 +31,35 @@ class _BarangPageState extends State<BarangPage> {
         future: MongoDatabase.getDocumentBarangById(jenis),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container(
-              color: Colors.white,
-              child: const LinearProgressIndicator(
-                backgroundColor: Colors.black,
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(jenis.nama),
+              ),
+              body: Center(
+                child: Container(
+                  color: Colors.white,
+                  child: const CircularProgressIndicator(
+                    backgroundColor: Colors.black,
+                  ),
+                ),
               ),
             );
           } else {
             if (snapshot.hasError) {
-              return Container(
-                color: Colors.white,
-                child: Center(
-                  child: Text(
-                    'ada kesalahan, coba lagi',
-                    style: Theme.of(context).textTheme.headline6,
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text(''),
+                ),
+                body: RefreshIndicator(
+                  onRefresh: refreshBarang,
+                  child: Container(
+                    color: Colors.white,
+                    child: Center(
+                      child: Text(
+                        'ada kesalahan, coba lagi',
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -53,12 +68,15 @@ class _BarangPageState extends State<BarangPage> {
                 appBar: AppBar(
                   title: Text(jenis.nama),
                 ),
-                body: Container(
-                  color: Colors.white,
-                  child: Center(
-                    child: Text(
-                      'Tidak ada Data ${jenis.nama}',
-                      style: Theme.of(context).textTheme.headline6,
+                body: RefreshIndicator(
+                  onRefresh: refreshBarang,
+                  child: Container(
+                    color: Colors.white12,
+                    child: Center(
+                      child: Text(
+                        'Tidak ada Data ${jenis.nama}',
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
                     ),
                   ),
                 ),
@@ -80,49 +98,52 @@ class _BarangPageState extends State<BarangPage> {
                 appBar: AppBar(
                   title: Text(jenis.nama),
                 ),
-                body: ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: _admin == 'kikicell'
-                            ? BarangCard(
-                                barang: Barang.fromMap(snapshot.data[index]),
-                                txtAdmin: _admin,
-                                onLongDelete: () {
-                                  showAlertHapus(
-                                      Barang.fromMap(snapshot.data[index]));
-                                },
-                                onTapEdit: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) {
-                                        return AddBarangPage(
-                                            nama: jenis.nama,
-                                            idJenis: jenis.id.toJson());
-                                      },
-                                      settings: RouteSettings(
-                                        arguments: Barang.fromMap(
-                                            snapshot.data[index]),
+                body: RefreshIndicator(
+                  onRefresh: refreshBarang,
+                  child: ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _admin == 'kikicell'
+                              ? BarangCard(
+                                  barang: Barang.fromMap(snapshot.data[index]),
+                                  txtAdmin: _admin,
+                                  onLongDelete: () {
+                                    showAlertHapus(
+                                        Barang.fromMap(snapshot.data[index]));
+                                  },
+                                  onTapEdit: () async {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) {
+                                          return AddBarangPage(
+                                              nama: jenis.nama,
+                                              idJenis: jenis.id.toJson());
+                                        },
+                                        settings: RouteSettings(
+                                          arguments: Barang.fromMap(
+                                              snapshot.data[index]),
+                                        ),
                                       ),
-                                    ),
-                                  ).then((value) => setState(() {}));
-                                },
-                                onPress: () {
-                                  showDetail(
-                                      Barang.fromMap(snapshot.data[index]));
-                                },
-                              )
-                            : BarangCard(
-                                barang: Barang.fromMap(snapshot.data[index]),
-                                txtAdmin: _admin,
-                                onPress: () {
-                                  showDetail(
-                                      Barang.fromMap(snapshot.data[index]));
-                                },
-                              ));
-                  },
+                                    ).then((value) => setState(() {}));
+                                  },
+                                  onPress: () {
+                                    showDetail(
+                                        Barang.fromMap(snapshot.data[index]));
+                                  },
+                                )
+                              : BarangCard(
+                                  barang: Barang.fromMap(snapshot.data[index]),
+                                  txtAdmin: _admin,
+                                  onPress: () {
+                                    showDetail(
+                                        Barang.fromMap(snapshot.data[index]));
+                                  },
+                                ));
+                    },
+                  ),
                 ),
                 floatingActionButton: _admin == 'kikicell'
                     ? FloatingActionButton(
@@ -145,6 +166,12 @@ class _BarangPageState extends State<BarangPage> {
             }
           }
         });
+  }
+
+  Future refreshBarang() async {
+    final Jenis jenis = ModalRoute.of(context).settings.arguments;
+    await MongoDatabase.getDocumentBarangById(jenis);
+    setState(() {});
   }
 
   void _panggilAdmin() async {
