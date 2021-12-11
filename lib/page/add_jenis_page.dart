@@ -121,9 +121,11 @@ class _AddJenisPageState extends State<AddJenisPage> {
     await MongoDatabase.insertJenis(jenis);
     Navigator.pop(context);
 
-    final aTambah = SnackBar(
-        content: Text('${namaController.text} Berhasil ditambahkan !!'));
-    ScaffoldMessenger.of(context).showSnackBar(aTambah);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${namaController.text} Berhasil ditambahkan !!'),
+      ),
+    );
   }
 
   updateJenis(Jenis jenis) async {
@@ -135,8 +137,10 @@ class _AddJenisPageState extends State<AddJenisPage> {
     await MongoDatabase.updateJenis(j);
     Navigator.pop(context);
 
-    final aUpdate =
-        SnackBar(content: Text('${jenis.nama} Berhasil di update !!'));
-    ScaffoldMessenger.of(context).showSnackBar(aUpdate);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${jenis.nama} Berhasil di update !!'),
+      ),
+    );
   }
 }

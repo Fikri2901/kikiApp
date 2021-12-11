@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:kikiapp/page/all_barang_page.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -79,8 +80,164 @@ class _HomeState extends State<Home> {
               ),
               Container(
                 margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-                color: Colors.blue[100],
-                height: 700,
+                height: 110.0,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    new Row(
+                      children: [
+                        new Padding(
+                          padding: EdgeInsets.only(left: 15.0, top: 10.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: IconButton(
+                                  iconSize: 50.0,
+                                  icon: Icon(Icons.inventory,
+                                      color: Colors.blue[300]),
+                                  onPressed: () {
+                                    Navigator.push(context, MaterialPageRoute(
+                                        builder: (BuildContext context) {
+                                      return AllBarangPage();
+                                    })).then((value) => setState(() {}));
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 7.0),
+                                child: Text(
+                                  'Barang',
+                                  style: TextStyle(
+                                    fontSize: 11.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        new Padding(
+                          padding: EdgeInsets.only(left: 15.0, top: 10.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: IconButton(
+                                  iconSize: 50.0,
+                                  icon: Icon(Icons.book_rounded,
+                                      color: Colors.lightGreen),
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Data semua Hutang'),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 7.0),
+                                child: Text(
+                                  'Hutang',
+                                  style: TextStyle(
+                                    fontSize: 11.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        new Padding(
+                          padding: EdgeInsets.only(left: 15.0, top: 10.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: IconButton(
+                                  iconSize: 50.0,
+                                  icon: Icon(Icons.library_books,
+                                      color: Colors.orange[300]),
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text('Data semua Token Listrik'),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 7.0),
+                                child: Text(
+                                  'Token Listrik',
+                                  style: TextStyle(
+                                    fontSize: 11.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        new Padding(
+                          padding: EdgeInsets.only(left: 15.0, top: 10.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: IconButton(
+                                  iconSize: 50.0,
+                                  icon: Icon(Icons.list_alt_rounded,
+                                      color: Colors.purple[300]),
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Data semua Bayar Listrik',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 7.0),
+                                child: Text(
+                                  'Bayar Listrik',
+                                  style: TextStyle(
+                                    fontSize: 11.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               )
             ],
           ),

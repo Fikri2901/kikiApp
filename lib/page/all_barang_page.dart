@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:kikiapp/models/barang.dart';
 import 'package:kikiapp/component/barang_card.dart';
 import 'package:kikiapp/database/database.dart';
-import 'package:kikiapp/models/jenis.dart';
-// ignore: unused_import
-import 'package:mongo_dart/mongo_dart.dart' as M;
+import 'package:kikiapp/models/barang.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'add_barang_page.dart';
-
-class BarangPage extends StatefulWidget {
-  BarangPage({Key key}) : super(key: key);
+class AllBarangPage extends StatefulWidget {
+  AllBarangPage({Key key}) : super(key: key);
 
   @override
-  _BarangPageState createState() => _BarangPageState();
+  _AllBarangPageState createState() => _AllBarangPageState();
 }
 
-class _BarangPageState extends State<BarangPage> {
+class _AllBarangPageState extends State<AllBarangPage> {
   TextEditingController cariController = new TextEditingController();
   String _admin = "";
   String searchString = "";
@@ -28,9 +23,8 @@ class _BarangPageState extends State<BarangPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Jenis jenis = ModalRoute.of(context).settings.arguments;
     return FutureBuilder(
-        future: MongoDatabase.getDocumentBarangById(jenis),
+        future: MongoDatabase.getBarang(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
@@ -38,7 +32,7 @@ class _BarangPageState extends State<BarangPage> {
                 child: new Hero(
                   tag: AppBar,
                   child: new AppBar(
-                    title: Text(jenis.nama),
+                    title: Text('Cari Semua Barang'),
                   ),
                 ),
                 preferredSize: new AppBar().preferredSize,
@@ -56,7 +50,7 @@ class _BarangPageState extends State<BarangPage> {
                             title: new TextField(
                               controller: cariController,
                               decoration: new InputDecoration(
-                                  hintText: 'Cari ${jenis.nama}',
+                                  hintText: 'Cari Barang',
                                   border: InputBorder.none),
                               onChanged: (value) {
                                 setState(() {
@@ -87,23 +81,6 @@ class _BarangPageState extends State<BarangPage> {
                   ),
                 ],
               ),
-              floatingActionButton: _admin == 'kikicell'
-                  ? FloatingActionButton(
-                      heroTag: 'btnTambah',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) {
-                              return AddBarangPage(
-                                  nama: jenis.nama, idJenis: jenis.id.toJson());
-                            },
-                          ),
-                        ).then((value) => setState(() {}));
-                      },
-                      child: Icon(Icons.add),
-                    )
-                  : null,
             );
           } else {
             if (snapshot.hasError) {
@@ -112,7 +89,7 @@ class _BarangPageState extends State<BarangPage> {
                   child: new Hero(
                     tag: AppBar,
                     child: new AppBar(
-                      title: Text(jenis.nama),
+                      title: Text('Cari Semua Barang'),
                     ),
                   ),
                   preferredSize: new AppBar().preferredSize,
@@ -136,7 +113,7 @@ class _BarangPageState extends State<BarangPage> {
                   child: new Hero(
                     tag: AppBar,
                     child: new AppBar(
-                      title: Text(jenis.nama),
+                      title: Text('Cari Semua Barang'),
                     ),
                   ),
                   preferredSize: new AppBar().preferredSize,
@@ -147,25 +124,12 @@ class _BarangPageState extends State<BarangPage> {
                     color: Colors.white12,
                     child: Center(
                       child: Text(
-                        'Tidak ada Data ${jenis.nama}',
+                        'Tidak ada Data Barang',
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
                   ),
                 ),
-                floatingActionButton: _admin == 'kikicell'
-                    ? FloatingActionButton(
-                        heroTag: 'btnTambah',
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (BuildContext context) {
-                            return AddBarangPage(
-                                nama: jenis.nama, idJenis: jenis.id.toJson());
-                          })).then((value) => setState(() {}));
-                        },
-                        child: Icon(Icons.add),
-                      )
-                    : null,
               );
             } else {
               return Scaffold(
@@ -173,7 +137,7 @@ class _BarangPageState extends State<BarangPage> {
                   child: new Hero(
                     tag: AppBar,
                     child: new AppBar(
-                      title: Text(jenis.nama),
+                      title: Text('Cari Semua Barang'),
                     ),
                   ),
                   preferredSize: new AppBar().preferredSize,
@@ -192,7 +156,7 @@ class _BarangPageState extends State<BarangPage> {
                               title: new TextField(
                                 controller: cariController,
                                 decoration: new InputDecoration(
-                                    hintText: 'Cari ${jenis.nama}',
+                                    hintText: 'Cari Barang',
                                     border: InputBorder.none),
                                 onChanged: (value) {
                                   setState(() {
@@ -232,30 +196,7 @@ class _BarangPageState extends State<BarangPage> {
                                             child: BarangCard(
                                               barang: Barang.fromMap(
                                                   snapshot.data[index]),
-                                              txtAdmin: _admin,
-                                              onLongDelete: () {
-                                                showAlertHapus(Barang.fromMap(
-                                                    snapshot.data[index]));
-                                              },
-                                              onTapEdit: () async {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AddBarangPage(
-                                                          nama: jenis.nama,
-                                                          idJenis: jenis.id
-                                                              .toJson());
-                                                    },
-                                                    settings: RouteSettings(
-                                                      arguments: Barang.fromMap(
-                                                          snapshot.data[index]),
-                                                    ),
-                                                  ),
-                                                ).then(
-                                                    (value) => setState(() {}));
-                                              },
+                                              txtAdmin: null,
                                               onPress: () {
                                                 showDetail(Barang.fromMap(
                                                     snapshot.data[index]));
@@ -267,7 +208,7 @@ class _BarangPageState extends State<BarangPage> {
                                             child: BarangCard(
                                               barang: Barang.fromMap(
                                                   snapshot.data[index]),
-                                              txtAdmin: _admin,
+                                              txtAdmin: null,
                                               onPress: () {
                                                 showDetail(Barang.fromMap(
                                                     snapshot.data[index]));
@@ -282,24 +223,6 @@ class _BarangPageState extends State<BarangPage> {
                     ),
                   ],
                 ),
-                floatingActionButton: _admin == 'kikicell'
-                    ? FloatingActionButton(
-                        heroTag: 'btnTambah',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) {
-                                return AddBarangPage(
-                                    nama: jenis.nama,
-                                    idJenis: jenis.id.toJson());
-                              },
-                            ),
-                          ).then((value) => setState(() {}));
-                        },
-                        child: Icon(Icons.add),
-                      )
-                    : null,
               );
             }
           }
@@ -307,8 +230,7 @@ class _BarangPageState extends State<BarangPage> {
   }
 
   Future refreshBarang() async {
-    final Jenis jenis = ModalRoute.of(context).settings.arguments;
-    await MongoDatabase.getDocumentBarangById(jenis);
+    await MongoDatabase.getBarang();
     setState(() {});
   }
 

@@ -42,6 +42,16 @@ class MongoDatabase {
   }
   //==================== Barang ==========================//
 
+  static Future<List<Map<String, dynamic>>> getBarang() async {
+    try {
+      final barang = await barangCollection.find().toList();
+      return barang;
+    } catch (e) {
+      print(e);
+      return Future.value(e);
+    }
+  }
+
   static Future<List<Map<String, dynamic>>> getDocumentBarangById(
       Jenis jenis) async {
     try {
