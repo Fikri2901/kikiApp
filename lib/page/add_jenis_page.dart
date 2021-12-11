@@ -27,8 +27,14 @@ class _AddJenisPageState extends State<AddJenisPage> {
       widgetText = 'Update jenis';
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widgetText),
+      appBar: new PreferredSize(
+        child: new Hero(
+          tag: AppBar,
+          child: new AppBar(
+            title: Text(widgetText),
+          ),
+        ),
+        preferredSize: new AppBar().preferredSize,
       ),
       body: Stack(
         children: [
@@ -40,14 +46,17 @@ class _AddJenisPageState extends State<AddJenisPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(20.0),
-                    child: TextFormField(
-                      validator: validatorNama,
-                      controller: namaController,
-                      decoration: InputDecoration(
-                        labelText: 'Nama',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10.0),
+                    child: Hero(
+                      tag: 'list',
+                      child: TextFormField(
+                        validator: validatorNama,
+                        controller: namaController,
+                        decoration: InputDecoration(
+                          labelText: 'Nama',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10.0),
+                            ),
                           ),
                         ),
                       ),
@@ -64,26 +73,29 @@ class _AddJenisPageState extends State<AddJenisPage> {
               child: SizedBox(
                 height: 50.0,
                 width: 160.0,
-                child: ElevatedButton(
-                  child: Text(
-                    widgetText,
-                    style: TextStyle(fontSize: 18.0),
+                child: Hero(
+                  tag: 'btnTambah',
+                  child: ElevatedButton(
+                    child: Text(
+                      widgetText,
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                    onPressed: () {
+                      if (jenis != null) {
+                        setState(() {
+                          namaController.text.isEmpty
+                              ? _validasi = true
+                              : _validasi = updateJenis(jenis);
+                        });
+                      } else {
+                        setState(() {
+                          namaController.text.isEmpty
+                              ? _validasi = true
+                              : _validasi = insertJenis();
+                        });
+                      }
+                    },
                   ),
-                  onPressed: () {
-                    if (jenis != null) {
-                      setState(() {
-                        namaController.text.isEmpty
-                            ? _validasi = true
-                            : _validasi = updateJenis(jenis);
-                      });
-                    } else {
-                      setState(() {
-                        namaController.text.isEmpty
-                            ? _validasi = true
-                            : _validasi = insertJenis();
-                      });
-                    }
-                  },
                 ),
               ),
             ),

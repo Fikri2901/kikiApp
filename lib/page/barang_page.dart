@@ -3,6 +3,7 @@ import 'package:kikiapp/models/barang.dart';
 import 'package:kikiapp/component/barang_card.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/jenis.dart';
+import 'package:kikiapp/page/home_page.dart';
 // ignore: unused_import
 import 'package:mongo_dart/mongo_dart.dart' as M;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,7 +18,9 @@ class BarangPage extends StatefulWidget {
 }
 
 class _BarangPageState extends State<BarangPage> {
+  TextEditingController cariController = new TextEditingController();
   String _admin = "";
+  String searchString = "";
   @override
   void initState() {
     super.initState();
@@ -32,23 +35,88 @@ class _BarangPageState extends State<BarangPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
-              appBar: AppBar(
-                title: Text(jenis.nama),
-              ),
-              body: Center(
-                child: Container(
-                  color: Colors.white,
-                  child: const CircularProgressIndicator(
-                    backgroundColor: Colors.black,
+              appBar: new PreferredSize(
+                child: new Hero(
+                  tag: AppBar,
+                  child: new AppBar(
+                    title: Text(jenis.nama),
                   ),
                 ),
+                preferredSize: new AppBar().preferredSize,
               ),
+              body: Column(
+                children: <Widget>[
+                  new Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Hero(
+                        tag: 'cari',
+                        child: new Card(
+                          child: new ListTile(
+                            leading: new Icon(Icons.search),
+                            title: new TextField(
+                              controller: cariController,
+                              decoration: new InputDecoration(
+                                  hintText: 'Cari ${jenis.nama}',
+                                  border: InputBorder.none),
+                              onChanged: (value) {
+                                setState(() {
+                                  searchString = value;
+                                });
+                              },
+                            ),
+                            trailing: new IconButton(
+                              icon: new Icon(Icons.cancel),
+                              onPressed: () {
+                                // cari.clear();
+                                cariController.clear();
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 300.0,
+                    color: Colors.white,
+                    child: Center(
+                      child: const CircularProgressIndicator(
+                        backgroundColor: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              floatingActionButton: _admin == 'kikicell'
+                  ? FloatingActionButton(
+                      heroTag: 'btnTambah',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return AddBarangPage(
+                                  nama: jenis.nama, idJenis: jenis.id.toJson());
+                            },
+                          ),
+                        ).then((value) => setState(() {}));
+                      },
+                      child: Icon(Icons.add),
+                    )
+                  : null,
             );
           } else {
             if (snapshot.hasError) {
               return Scaffold(
-                appBar: AppBar(
-                  title: Text(''),
+                appBar: new PreferredSize(
+                  child: new Hero(
+                    tag: AppBar,
+                    child: new AppBar(
+                      title: Text(jenis.nama),
+                    ),
+                  ),
+                  preferredSize: new AppBar().preferredSize,
                 ),
                 body: RefreshIndicator(
                   onRefresh: refreshBarang,
@@ -65,8 +133,14 @@ class _BarangPageState extends State<BarangPage> {
               );
             } else if (snapshot.data.length < 1) {
               return Scaffold(
-                appBar: AppBar(
-                  title: Text(jenis.nama),
+                appBar: new PreferredSize(
+                  child: new Hero(
+                    tag: AppBar,
+                    child: new AppBar(
+                      title: Text(jenis.nama),
+                    ),
+                  ),
+                  preferredSize: new AppBar().preferredSize,
                 ),
                 body: RefreshIndicator(
                   onRefresh: refreshBarang,
@@ -82,6 +156,7 @@ class _BarangPageState extends State<BarangPage> {
                 ),
                 floatingActionButton: _admin == 'kikicell'
                     ? FloatingActionButton(
+                        heroTag: 'btnTambah',
                         onPressed: () {
                           Navigator.push(context, MaterialPageRoute(
                               builder: (BuildContext context) {
@@ -95,58 +170,122 @@ class _BarangPageState extends State<BarangPage> {
               );
             } else {
               return Scaffold(
-                appBar: AppBar(
-                  title: Text(jenis.nama),
-                ),
-                body: RefreshIndicator(
-                  onRefresh: refreshBarang,
-                  child: ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: _admin == 'kikicell'
-                              ? BarangCard(
-                                  barang: Barang.fromMap(snapshot.data[index]),
-                                  txtAdmin: _admin,
-                                  onLongDelete: () {
-                                    showAlertHapus(
-                                        Barang.fromMap(snapshot.data[index]));
-                                  },
-                                  onTapEdit: () async {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) {
-                                          return AddBarangPage(
-                                              nama: jenis.nama,
-                                              idJenis: jenis.id.toJson());
-                                        },
-                                        settings: RouteSettings(
-                                          arguments: Barang.fromMap(
-                                              snapshot.data[index]),
-                                        ),
-                                      ),
-                                    ).then((value) => setState(() {}));
-                                  },
-                                  onPress: () {
-                                    showDetail(
-                                        Barang.fromMap(snapshot.data[index]));
-                                  },
-                                )
-                              : BarangCard(
-                                  barang: Barang.fromMap(snapshot.data[index]),
-                                  txtAdmin: _admin,
-                                  onPress: () {
-                                    showDetail(
-                                        Barang.fromMap(snapshot.data[index]));
-                                  },
-                                ));
-                    },
+                appBar: new PreferredSize(
+                  child: new Hero(
+                    tag: AppBar,
+                    child: new AppBar(
+                      title: Text(jenis.nama),
+                    ),
                   ),
+                  preferredSize: new AppBar().preferredSize,
+                ),
+                body: Column(
+                  children: <Widget>[
+                    new Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Hero(
+                          tag: 'cari',
+                          child: new Card(
+                            elevation: 6,
+                            child: new ListTile(
+                              leading: new Icon(Icons.search),
+                              title: new TextField(
+                                controller: cariController,
+                                decoration: new InputDecoration(
+                                    hintText: 'Cari ${jenis.nama}',
+                                    border: InputBorder.none),
+                                onChanged: (value) {
+                                  setState(() {
+                                    searchString = value;
+                                  });
+                                },
+                              ),
+                              trailing: new IconButton(
+                                icon: new Icon(Icons.cancel),
+                                onPressed: () {
+                                  cariController.clear();
+                                  setState(() {
+                                    searchString = "";
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    new Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: refreshBarang,
+                        child: ListView.builder(
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) {
+                            return snapshot.data[index]['nama']
+                                    .toString()
+                                    .toLowerCase()
+                                    .contains(searchString)
+                                ? Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: _admin == 'kikicell'
+                                        ? Hero(
+                                            tag: 'list',
+                                            child: BarangCard(
+                                              barang: Barang.fromMap(
+                                                  snapshot.data[index]),
+                                              txtAdmin: _admin,
+                                              onLongDelete: () {
+                                                showAlertHapus(Barang.fromMap(
+                                                    snapshot.data[index]));
+                                              },
+                                              onTapEdit: () async {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AddBarangPage(
+                                                          nama: jenis.nama,
+                                                          idJenis: jenis.id
+                                                              .toJson());
+                                                    },
+                                                    settings: RouteSettings(
+                                                      arguments: Barang.fromMap(
+                                                          snapshot.data[index]),
+                                                    ),
+                                                  ),
+                                                ).then(
+                                                    (value) => setState(() {}));
+                                              },
+                                              onPress: () {
+                                                showDetail(Barang.fromMap(
+                                                    snapshot.data[index]));
+                                              },
+                                            ),
+                                          )
+                                        : Hero(
+                                            tag: 'detailBarang',
+                                            child: BarangCard(
+                                              barang: Barang.fromMap(
+                                                  snapshot.data[index]),
+                                              txtAdmin: _admin,
+                                              onPress: () {
+                                                showDetail(Barang.fromMap(
+                                                    snapshot.data[index]));
+                                              },
+                                            ),
+                                          ),
+                                  )
+                                : Container();
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 floatingActionButton: _admin == 'kikicell'
                     ? FloatingActionButton(
+                        heroTag: 'btnTambah',
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -221,7 +360,10 @@ class _BarangPageState extends State<BarangPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return alert;
+        return Hero(
+          tag: 'detailBarang',
+          child: alert,
+        );
       },
     );
   }

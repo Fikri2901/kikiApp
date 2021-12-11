@@ -48,8 +48,14 @@ class _AddBarangPageState extends State<AddBarangPage> {
       widgetText = 'Update ${barang.nama}';
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widgetText),
+      appBar: new PreferredSize(
+        child: new Hero(
+          tag: AppBar,
+          child: new AppBar(
+            title: Text(widgetText),
+          ),
+        ),
+        preferredSize: new AppBar().preferredSize,
       ),
       body: Stack(
         children: [
@@ -62,14 +68,17 @@ class _AddBarangPageState extends State<AddBarangPage> {
                   Padding(
                     padding: const EdgeInsets.only(
                         top: 20.0, left: 20.0, right: 20.0),
-                    child: TextFormField(
-                      validator: validatorNama,
-                      controller: namaController,
-                      decoration: InputDecoration(
-                        labelText: 'Nama',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10.0),
+                    child: Hero(
+                      tag: 'list',
+                      child: TextFormField(
+                        validator: validatorNama,
+                        controller: namaController,
+                        decoration: InputDecoration(
+                          labelText: 'Nama',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10.0),
+                            ),
                           ),
                         ),
                       ),
@@ -104,27 +113,31 @@ class _AddBarangPageState extends State<AddBarangPage> {
                   Padding(
                     padding: const EdgeInsets.only(
                         top: 20.0, left: 20.0, right: 20.0),
-                    child: TextFormField(
-                      validator: validatorGrosir,
-                      controller: grosirController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Harga Grosir',
-                        prefixText: _currency,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10.0),
+                    child: Hero(
+                      tag: 'list',
+                      child: TextFormField(
+                        validator: validatorGrosir,
+                        controller: grosirController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Harga Grosir',
+                          prefixText: _currency,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10.0),
+                            ),
                           ),
                         ),
+                        onChanged: (string) {
+                          string =
+                              '${_formatNumber(string.replaceAll(',', ''))}';
+                          grosirController.value = TextEditingValue(
+                            text: string,
+                            selection:
+                                TextSelection.collapsed(offset: string.length),
+                          );
+                        },
                       ),
-                      onChanged: (string) {
-                        string = '${_formatNumber(string.replaceAll(',', ''))}';
-                        grosirController.value = TextEditingValue(
-                          text: string,
-                          selection:
-                              TextSelection.collapsed(offset: string.length),
-                        );
-                      },
                     ),
                   ),
                 ],
@@ -138,34 +151,37 @@ class _AddBarangPageState extends State<AddBarangPage> {
               child: SizedBox(
                 height: 50.0,
                 width: 160.0,
-                child: ElevatedButton(
-                  child: Text(
-                    widgetText,
-                    style: TextStyle(fontSize: 18.0),
+                child: Hero(
+                  tag: 'btnTambah',
+                  child: ElevatedButton(
+                    child: Text(
+                      widgetText,
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                    onPressed: () {
+                      if (barang != null) {
+                        setState(() {
+                          if (namaController.text.isEmpty ||
+                              ecerController.text.isEmpty ||
+                              grosirController.text.isEmpty) {
+                            _validasi = true;
+                          } else {
+                            updateBarang(barang);
+                          }
+                        });
+                      } else {
+                        setState(() {
+                          if (namaController.text.isEmpty ||
+                              ecerController.text.isEmpty ||
+                              grosirController.text.isEmpty) {
+                            _validasi = true;
+                          } else {
+                            insertBarang();
+                          }
+                        });
+                      }
+                    },
                   ),
-                  onPressed: () {
-                    if (barang != null) {
-                      setState(() {
-                        if (namaController.text.isEmpty ||
-                            ecerController.text.isEmpty ||
-                            grosirController.text.isEmpty) {
-                          _validasi = true;
-                        } else {
-                          updateBarang(barang);
-                        }
-                      });
-                    } else {
-                      setState(() {
-                        if (namaController.text.isEmpty ||
-                            ecerController.text.isEmpty ||
-                            grosirController.text.isEmpty) {
-                          _validasi = true;
-                        } else {
-                          insertBarang();
-                        }
-                      });
-                    }
-                  },
                 ),
               ),
             ),
