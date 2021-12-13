@@ -1,32 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:kikiapp/login.dart';
+import 'package:kikiapp/navbarButtom.dart';
 import 'package:kikiapp/page/all_barang_page.dart';
+import 'package:kikiapp/page/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Home extends StatefulWidget {
-  Home({Key key}) : super(key: key);
+class Info extends StatefulWidget {
+  Info({Key key}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  _InfoState createState() => _InfoState();
 }
 
-class _HomeState extends State<Home> {
+class _InfoState extends State<Info> {
   int _current = 0;
   final CarouselController _controller = CarouselController();
+
+  String _admin = "";
 
   @override
   void initState() {
     super.initState();
+    _panggilAdmin();
   }
-
-  final double ukuranFont = 18.0;
-  final double ukuranIcon = 100.0;
 
   Widget menuIcon() {
     return GridView.count(
       primary: true,
       physics: NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.only(top: 20.0),
-      crossAxisCount: 2,
+      crossAxisCount: 4,
       children: <Widget>[
         Column(
           children: [
@@ -36,12 +40,12 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: IconButton(
-                iconSize: ukuranIcon,
+                iconSize: 50.0,
                 icon: Icon(Icons.inventory, color: Colors.blue[300]),
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (BuildContext context) {
-                    return AllBarangPage();
+                    return Homepage();
                   })).then((value) => setState(() {}));
                 },
               ),
@@ -52,7 +56,7 @@ class _HomeState extends State<Home> {
                 child: Text(
                   'Barang',
                   style: TextStyle(
-                    fontSize: ukuranFont,
+                    fontSize: 11.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -68,7 +72,7 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: IconButton(
-                iconSize: ukuranIcon,
+                iconSize: 50.0,
                 icon: Icon(Icons.book_rounded, color: Colors.lightGreen),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -85,7 +89,7 @@ class _HomeState extends State<Home> {
                 child: Text(
                   'Hutang',
                   style: TextStyle(
-                    fontSize: ukuranFont,
+                    fontSize: 11.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -101,7 +105,7 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: IconButton(
-                iconSize: ukuranIcon,
+                iconSize: 50.0,
                 icon: Icon(Icons.library_books, color: Colors.orange[300]),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -118,7 +122,7 @@ class _HomeState extends State<Home> {
                 child: Text(
                   'Token Listrik',
                   style: TextStyle(
-                    fontSize: ukuranFont,
+                    fontSize: 11.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -134,7 +138,7 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: IconButton(
-                iconSize: ukuranIcon,
+                iconSize: 50.0,
                 icon: Icon(Icons.list_alt_rounded, color: Colors.purple[300]),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -156,7 +160,7 @@ class _HomeState extends State<Home> {
                 child: Text(
                   'Bayar Listrik',
                   style: TextStyle(
-                    fontSize: ukuranFont,
+                    fontSize: 11.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -168,63 +172,162 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Widget listMenu() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Material(
+            borderRadius: BorderRadius.circular(10),
+            elevation: 3,
+            child: ListTile(
+              onTap: () {},
+              leading: Text('icon'),
+              title: Text('Hello'),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Material(
+            borderRadius: BorderRadius.circular(10),
+            elevation: 3,
+            child: ListTile(
+              onTap: () {},
+              leading: Text('icon'),
+              title: Text('Hello'),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Material(
+            borderRadius: BorderRadius.circular(10),
+            elevation: 3,
+            child: ListTile(
+              onTap: () {},
+              leading: Text('icon'),
+              title: Text('Hello'),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Material(
+            borderRadius: BorderRadius.circular(10),
+            elevation: 3,
+            child: ListTile(
+              onTap: () {},
+              leading: Text('icon'),
+              title: Text('Hello'),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Material(
+            borderRadius: BorderRadius.circular(10),
+            elevation: 3,
+            child: ListTile(
+              onTap: () {},
+              leading: Text('icon'),
+              title: Text('Hello'),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Material(
+            borderRadius: BorderRadius.circular(10),
+            elevation: 3,
+            child: ListTile(
+              onTap: () {},
+              leading: Text('icon'),
+              title: Text('Hello'),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Material(
+            borderRadius: BorderRadius.circular(10),
+            elevation: 3,
+            child: ListTile(
+              onTap: () {},
+              leading: Text('icon'),
+              title: Text('Hello'),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Material(
+            borderRadius: BorderRadius.circular(10),
+            elevation: 3,
+            child: ListTile(
+              onTap: () {},
+              leading: Text('icon'),
+              title: Text('Hello'),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _tombolLogout() {
+    return IconButton(
+      icon: Icon(Icons.lock_open),
+      onPressed: () {
+        showLogout();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Kiki Cell'),
         centerTitle: true,
-        actions: <Widget>[],
+        actions: _admin == 'kikicell'
+            ? <Widget>[
+                _tombolLogout(),
+              ]
+            : null,
       ),
       body: RefreshIndicator(
         onRefresh: refreshData,
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              CarouselSlider(
-                options: CarouselOptions(
-                  autoPlay: true,
-                  aspectRatio: 2.0,
-                  enlargeCenterPage: true,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _current = index;
-                    });
-                  },
-                ),
-                items: imageSliders,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: imgList.asMap().entries.map((entry) {
-                  return GestureDetector(
-                    onTap: () => _controller.animateToPage(entry.key),
-                    child: Container(
-                      width: 12.0,
-                      height: 12.0,
-                      margin:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: (Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black)
-                              .withOpacity(_current == entry.key ? 0.9 : 0.4)),
-                    ),
-                  );
-                }).toList(),
-              ),
-              Container(
-                margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-                height: 370.0,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: menuIcon(),
-              )
-            ],
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: Column(
+              children: [
+                _admin == 'kikicell'
+                    ? Container(
+                        margin: const EdgeInsets.only(right: 10.0, left: 10.0),
+                        height: 125.0,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: menuIcon(),
+                      )
+                    : OutlineButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) {
+                                return LoginPage();
+                              },
+                            ),
+                          );
+                        },
+                        child: Text('Login Admin')),
+                listMenu(),
+              ],
+            ),
           ),
         ),
       ),
@@ -233,6 +336,63 @@ class _HomeState extends State<Home> {
 
   Future refreshData() async {
     setState(() {});
+  }
+
+  showLogout() {
+    Widget cancelButton = TextButton(
+      child: Text("Kembali"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Oke"),
+      onPressed: () async {
+        SharedPreferences pref = await SharedPreferences.getInstance();
+
+        setState(() {
+          pref.clear();
+        });
+        // Navigator.pop(context);
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+          builder: (BuildContext context) {
+            return NavbarButtom();
+          },
+        ), (route) => false);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logout Berhasil !!!'),
+          ),
+        );
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Logout"),
+      content: Text("Apakah kamu yakin?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  void _panggilAdmin() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    setState(() {
+      if (pref.getString('admin') != null) {
+        _admin = pref.getString('admin');
+      }
+    });
   }
 }
 

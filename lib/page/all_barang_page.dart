@@ -1,274 +1,216 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:kikiapp/component/barang_card.dart';
+import 'package:kikiapp/component/barang_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/barang.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AllBarangPage extends StatefulWidget {
-  AllBarangPage({Key key}) : super(key: key);
+  final String idJenis, namaJenis;
+  AllBarangPage({Key key, this.idJenis, this.namaJenis}) : super(key: key);
 
   @override
-  _AllBarangPageState createState() => _AllBarangPageState();
+  _AllBarangPageState createState() => new _AllBarangPageState();
 }
 
 class _AllBarangPageState extends State<AllBarangPage> {
-  TextEditingController cariController = new TextEditingController();
-  String _admin = "";
-  String searchString = "";
-  @override
-  void initState() {
-    super.initState();
-    _panggilAdmin();
-  }
+  List<Barang> _searchResult = [];
+  List<Barang> _barang = [];
+  TextEditingController cariText = new TextEditingController();
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: MongoDatabase.getBarang(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Scaffold(
-              appBar: new PreferredSize(
-                child: new Hero(
-                  tag: AppBar,
-                  child: new AppBar(
-                    title: Text('Cari Semua Barang'),
-                  ),
-                ),
-                preferredSize: new AppBar().preferredSize,
-              ),
-              body: Column(
-                children: <Widget>[
-                  new Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Hero(
-                        tag: 'cari',
-                        child: new Card(
-                          child: new ListTile(
-                            leading: new Icon(Icons.search),
-                            title: new TextField(
-                              controller: cariController,
-                              decoration: new InputDecoration(
-                                  hintText: 'Cari Barang',
-                                  border: InputBorder.none),
-                              onChanged: (value) {
-                                setState(() {
-                                  searchString = value;
-                                });
-                              },
-                            ),
-                            trailing: new IconButton(
-                              icon: new Icon(Icons.cancel),
-                              onPressed: () {
-                                // cari.clear();
-                                cariController.clear();
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 300.0,
-                    color: Colors.white,
-                    child: Center(
-                      child: const CircularProgressIndicator(
-                        backgroundColor: Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            if (snapshot.hasError) {
-              return Scaffold(
-                appBar: new PreferredSize(
-                  child: new Hero(
-                    tag: AppBar,
-                    child: new AppBar(
-                      title: Text('Cari Semua Barang'),
-                    ),
-                  ),
-                  preferredSize: new AppBar().preferredSize,
-                ),
-                body: RefreshIndicator(
-                  onRefresh: refreshBarang,
-                  child: Container(
-                    color: Colors.white,
-                    child: Center(
-                      child: Text(
-                        'ada kesalahan, coba lagi',
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            } else if (snapshot.data.length < 1) {
-              return Scaffold(
-                appBar: new PreferredSize(
-                  child: new Hero(
-                    tag: AppBar,
-                    child: new AppBar(
-                      title: Text('Cari Semua Barang'),
-                    ),
-                  ),
-                  preferredSize: new AppBar().preferredSize,
-                ),
-                body: RefreshIndicator(
-                  onRefresh: refreshBarang,
-                  child: Container(
-                    color: Colors.white12,
-                    child: Center(
-                      child: Text(
-                        'Tidak ada Data Barang',
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              return Scaffold(
-                appBar: new PreferredSize(
-                  child: new Hero(
-                    tag: AppBar,
-                    child: new AppBar(
-                      title: Text('Cari Semua Barang'),
-                    ),
-                  ),
-                  preferredSize: new AppBar().preferredSize,
-                ),
-                body: Column(
-                  children: <Widget>[
-                    new Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Hero(
-                          tag: 'cari',
-                          child: new Card(
-                            elevation: 6,
-                            child: new ListTile(
-                              leading: new Icon(Icons.search),
-                              title: new TextField(
-                                controller: cariController,
-                                decoration: new InputDecoration(
-                                    hintText: 'Cari Barang',
-                                    border: InputBorder.none),
-                                onChanged: (value) {
-                                  setState(() {
-                                    searchString = value;
-                                  });
-                                },
-                              ),
-                              trailing: new IconButton(
-                                icon: new Icon(Icons.cancel),
-                                onPressed: () {
-                                  cariController.clear();
-                                  setState(() {
-                                    searchString = "";
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    new Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: refreshBarang,
-                        child: ListView.builder(
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (context, index) {
-                            return snapshot.data[index]['nama']
-                                    .toString()
-                                    .toLowerCase()
-                                    .contains(searchString)
-                                ? Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: _admin == 'kikicell'
-                                        ? Hero(
-                                            tag: 'list',
-                                            child: BarangCard(
-                                              barang: Barang.fromMap(
-                                                  snapshot.data[index]),
-                                              txtAdmin: null,
-                                              onPress: () {
-                                                showDetail(Barang.fromMap(
-                                                    snapshot.data[index]));
-                                              },
-                                            ),
-                                          )
-                                        : Hero(
-                                            tag: 'detailBarang',
-                                            child: BarangCard(
-                                              barang: Barang.fromMap(
-                                                  snapshot.data[index]),
-                                              txtAdmin: null,
-                                              onPress: () {
-                                                showDetail(Barang.fromMap(
-                                                    snapshot.data[index]));
-                                              },
-                                            ),
-                                          ),
-                                  )
-                                : Container();
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-          }
-        });
-  }
-
-  Future refreshBarang() async {
-    await MongoDatabase.getBarang();
-    setState(() {});
-  }
-
-  void _panggilAdmin() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-
+  // Get json result and convert it to model. Then add
+  Future<Null> getBarang() async {
+    final resp = await MongoDatabase.getBarang();
     setState(() {
-      if (pref.getString('admin') != null) {
-        _admin = pref.getString('admin');
+      for (Map barang in resp) {
+        _barang.add(Barang.fromMap(barang));
       }
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+
+    getBarang();
+  }
+
+  Widget _barangList() {
+    return new GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+      ),
+      itemCount: _barang.length,
+      itemBuilder: (context, index) {
+        return new Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Hero(
+            tag: 'list',
+            child: BarangCardGrid(
+              barang: Barang.fromMap(
+                _barang[index].toMap(),
+              ),
+              detailBarang: () {
+                showDetail(
+                  Barang.fromMap(
+                    _barang[index].toMap(),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _hasilCari() {
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+      ),
+      itemCount: _searchResult.length,
+      itemBuilder: (context, index) {
+        return new Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Hero(
+            tag: 'list',
+            child: BarangCardGrid(
+              barang: Barang.fromMap(
+                _searchResult[index].toMap(),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _searchBox() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Card(
+        child: new ListTile(
+          leading: new Icon(Icons.search),
+          title: new TextField(
+            controller: cariText,
+            decoration: new InputDecoration(
+                hintText: 'Cari semua', border: InputBorder.none),
+            onChanged: onSearchTextChanged,
+          ),
+          trailing: new IconButton(
+            icon: new Icon(Icons.cancel),
+            onPressed: () {
+              cariText.clear();
+              onSearchTextChanged('');
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _body() {
+    return new Column(
+      children: <Widget>[
+        new Container(
+          color: Theme.of(context).primaryColor,
+          child: _searchBox(),
+        ),
+        Expanded(
+          child: new RefreshIndicator(
+              onRefresh: refreshBarang,
+              child: _searchResult.length != 0 || cariText.text.isNotEmpty
+                  ? _hasilCari()
+                  : _barangList()),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Barang'),
+        elevation: 0.0,
+      ),
+      body: _body(),
+      // resizeToAvoidBottomPadding: true,
+    );
+  }
+
+  Future refreshBarang() async {
+    await MongoDatabase.getBarangById(this.widget.idJenis);
+    setState(() {});
+  }
+
   showDetail(Barang barang) {
     Widget cancelButton = TextButton(
-      child: Text("Kembali"),
+      child: Text("Tutup"),
       onPressed: () {
         Navigator.of(context).pop();
       },
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Detail ${barang.nama}"),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(15.0),
+        ),
+      ),
+      contentPadding: EdgeInsets.only(top: 0),
       content: Container(
-        height: 100.0,
+        width: 300.0,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              "Harga Ecer : ${barang.harga_ecer}",
-              textAlign: TextAlign.left,
+            InkWell(
+              child: Container(
+                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15.0),
+                      topRight: Radius.circular(15.0)),
+                ),
+                child: Text(
+                  "${barang.nama}",
+                  style: TextStyle(
+                      fontSize: 25.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
-            Text(
-              "Harga Grosir : ${barang.harga_grosir}",
-              textAlign: TextAlign.left,
+            SizedBox(
+              height: 10.0,
             ),
-            Text(
-              "Update : ${barang.tanggal_update}",
-              textAlign: TextAlign.left,
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 8.0),
+              child: Text(
+                "Harga Ecer : Rp.${barang.harga_ecer}",
+                textAlign: TextAlign.left,
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 8.0),
+              child: Text(
+                "Harga Grosir : Rp.${barang.harga_grosir}",
+                textAlign: TextAlign.left,
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 8.0),
+              child: Text(
+                "Update : ${barang.tanggal_update}",
+                textAlign: TextAlign.left,
+              ),
             ),
           ],
         ),
@@ -289,42 +231,18 @@ class _AllBarangPageState extends State<AllBarangPage> {
     );
   }
 
-  showAlertHapus(Barang barang) {
-    Widget cancelButton = TextButton(
-      child: Text("Kembali"),
-      onPressed: () {
-        Navigator.of(context).pop();
-      },
-    );
-    Widget continueButton = TextButton(
-      child: Text("Oke"),
-      onPressed: () async {
-        await MongoDatabase.deleteBarang(barang);
-        setState(() {});
-        Navigator.of(context).pop();
+  onSearchTextChanged(String text) async {
+    _searchResult.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${barang.nama} Sudah terhapus !!'),
-          ),
-        );
-      },
-    );
+    _barang.forEach((barang) {
+      if (barang.nama.toLowerCase().contains(text.toLowerCase()))
+        _searchResult.add(barang);
+    });
 
-    AlertDialog alert = AlertDialog(
-      title: Text("Hapus ${barang.nama}"),
-      content: Text("Apakah kamu yakin?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
+    setState(() {});
   }
 }

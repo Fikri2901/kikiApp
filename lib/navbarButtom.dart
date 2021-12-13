@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kikiapp/home.dart';
+import 'package:kikiapp/info.dart';
 import 'package:kikiapp/page/home_page.dart';
 import 'package:kikiapp/page/home_page_grid.dart';
 import 'package:kikiapp/page/jenis_page_grid.dart';
@@ -20,7 +21,7 @@ class _NavbarButtomState extends State<NavbarButtom> {
 
   @override
   Widget build(BuildContext context) {
-    final _listPage = <Widget>[Home(), JenisPage(), Text('Halaman Info')];
+    final _listPage = <Widget>[Home(), JenisPage(), Info()];
 
     final _navbarItem = <BottomNavigationBarItem>[
       BottomNavigationBarItem(
