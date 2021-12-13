@@ -3,14 +3,9 @@ import 'package:kikiapp/models/jenis.dart';
 
 class JenisCard extends StatelessWidget {
   JenisCard(
-      {this.jenis,
-      this.txtAdmin,
-      this.onLongDelete,
-      this.onTapEdit,
-      this.onTapListBarang});
+      {this.jenis, this.onLongDelete, this.onTapEdit, this.onTapListBarang});
 
   final Jenis jenis;
-  final String txtAdmin;
   final Function onLongDelete, onTapEdit, onTapListBarang;
 
   @override
@@ -23,17 +18,15 @@ class JenisCard extends StatelessWidget {
         onLongPress: onLongDelete,
         title: Text(jenis.nama),
         subtitle: Text('update: ${jenis.tanggal_update}'),
-        trailing: txtAdmin == 'kikicell'
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  GestureDetector(
-                    child: Icon(Icons.edit),
-                    onTap: onTapEdit,
-                  ),
-                ],
-              )
-            : null,
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            GestureDetector(
+              child: Icon(Icons.edit),
+              onTap: onTapEdit,
+            ),
+          ],
+        ),
       ),
     );
   }

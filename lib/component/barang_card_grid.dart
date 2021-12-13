@@ -17,7 +17,7 @@ class BarangCardGrid extends StatelessWidget {
         elevation: 5.0,
         color: Colors.white,
         child: Container(
-          margin: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+          // margin: const EdgeInsets.only(top: 10.0),
           child: Column(
             children: [
               Container(
@@ -29,8 +29,8 @@ class BarangCardGrid extends StatelessWidget {
               ),
               Expanded(
                 child: Padding(
-                  padding:
-                      const EdgeInsets.only(top: 10.0, left: 3.0, right: 3.0),
+                  padding: const EdgeInsets.only(
+                      top: 10.0, left: 3.0, right: 3.0, bottom: 10.0),
                   child: Column(
                     children: [
                       Text(
@@ -41,8 +41,10 @@ class BarangCardGrid extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 10.0),
                         child: Text(
                           'Rp.' + barang.harga_ecer,
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.green[300]),
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.green[300],
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],

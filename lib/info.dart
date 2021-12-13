@@ -1,9 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:kikiapp/login.dart';
 import 'package:kikiapp/navbarButtom.dart';
-import 'package:kikiapp/page/all_barang_page.dart';
 import 'package:kikiapp/page/home_page.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Info extends StatefulWidget {
@@ -14,15 +14,26 @@ class Info extends StatefulWidget {
 }
 
 class _InfoState extends State<Info> {
-  int _current = 0;
-  final CarouselController _controller = CarouselController();
-
   String _admin = "";
 
   @override
   void initState() {
     super.initState();
     _panggilAdmin();
+  }
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  void onRefresh() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    _refreshController.refreshCompleted();
+  }
+
+  void onLoading() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    if (mounted) setState(() {});
+    _refreshController.refreshCompleted();
   }
 
   Widget menuIcon() {
@@ -296,8 +307,36 @@ class _InfoState extends State<Info> {
               ]
             : null,
       ),
-      body: RefreshIndicator(
-        onRefresh: refreshData,
+      body: SmartRefresher(
+        enablePullDown: true,
+        // enablePullUp: true,
+        controller: _refreshController,
+        onRefresh: onRefresh,
+        onLoading: onLoading,
+        physics: BouncingScrollPhysics(),
+        header: WaterDropMaterialHeader(),
+        footer: CustomFooter(
+          builder: (BuildContext context, LoadStatus mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text("Pull up load");
+            } else if (mode == LoadStatus.loading) {
+              body = CupertinoActivityIndicator();
+            } else if (mode == LoadStatus.failed) {
+              body = Text("Load Failed! Click retry");
+            } else if (mode == LoadStatus.canLoading) {
+              body = Text("release to load more");
+            } else {
+              body = Text("No More Data");
+            }
+            return Container(
+              height: 55.0,
+              child: Center(
+                child: body,
+              ),
+            );
+          },
+        ),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.only(top: 10.0),
@@ -332,10 +371,6 @@ class _InfoState extends State<Info> {
         ),
       ),
     );
-  }
-
-  Future refreshData() async {
-    setState(() {});
   }
 
   showLogout() {

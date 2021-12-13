@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kikiapp/component/jenis_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/jenis.dart';
 import 'package:kikiapp/page/barang_page_grid.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class JenisPage extends StatefulWidget {
   JenisPage({Key key}) : super(key: key);
@@ -18,8 +18,21 @@ class _JenisPageState extends State<JenisPage> {
   List<Jenis> _searchResult = [];
   List<Jenis> _jenis = [];
   TextEditingController controller = new TextEditingController();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
-  // Get json result and convert it to model. Then add
+  void onRefresh() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    _refreshController.refreshCompleted();
+  }
+
+  void onLoading() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    getJenis();
+    if (mounted) setState(() {});
+    _refreshController.refreshCompleted();
+  }
+
   Future<Null> getJenis() async {
     final resp = await MongoDatabase.getDocumentJenis();
 
@@ -33,7 +46,6 @@ class _JenisPageState extends State<JenisPage> {
   @override
   void initState() {
     super.initState();
-
     getJenis();
   }
 
@@ -61,7 +73,9 @@ class _JenisPageState extends State<JenisPage> {
                           namaJenis: _jenis[index].nama);
                     },
                   ),
-                ).then((value) => setState(() {}));
+                ).then(
+                  (value) => setState(() {}),
+                );
               },
             ),
           ),
@@ -89,7 +103,9 @@ class _JenisPageState extends State<JenisPage> {
                   context,
                   MaterialPageRoute(
                     builder: (BuildContext context) {
-                      return BarangPage(idJenis: _jenis[index].id.toJson());
+                      return BarangPage(
+                          idJenis: _searchResult[index].id.toJson(),
+                          namaJenis: _searchResult[index].nama);
                     },
                     settings: RouteSettings(
                       arguments: Jenis.fromMap(
@@ -138,11 +154,40 @@ class _JenisPageState extends State<JenisPage> {
           child: _searchBox(),
         ),
         Expanded(
-          child: new RefreshIndicator(
-              onRefresh: refreshJenis,
-              child: _searchResult.length != 0 || controller.text.isNotEmpty
-                  ? _hasilCari()
-                  : _jenisList()),
+          child: SmartRefresher(
+            enablePullDown: true,
+            // enablePullUp: true,
+            controller: _refreshController,
+            onRefresh: onRefresh,
+            onLoading: onLoading,
+            physics: BouncingScrollPhysics(),
+            header: WaterDropMaterialHeader(),
+            footer: CustomFooter(
+              builder: (BuildContext context, LoadStatus mode) {
+                Widget body;
+                if (mode == LoadStatus.idle) {
+                  body = Text("Pull up load");
+                } else if (mode == LoadStatus.loading) {
+                  body = CupertinoActivityIndicator();
+                } else if (mode == LoadStatus.failed) {
+                  body = Text("Load Failed! Click retry");
+                } else if (mode == LoadStatus.canLoading) {
+                  body = Text("release to load more");
+                } else {
+                  body = Text("No More Data");
+                }
+                return Container(
+                  height: 55.0,
+                  child: Center(
+                    child: body,
+                  ),
+                );
+              },
+            ),
+            child: _searchResult.length != 0 || controller.text.isNotEmpty
+                ? _hasilCari()
+                : _jenisList(),
+          ),
         ),
       ],
     );
@@ -159,11 +204,6 @@ class _JenisPageState extends State<JenisPage> {
       body: _body(),
       // resizeToAvoidBottomPadding: true,
     );
-  }
-
-  Future refreshJenis() async {
-    await MongoDatabase.getDocumentJenis();
-    setState(() {});
   }
 
   onSearchTextChanged(String text) async {

@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:kikiapp/page/all_barang_page.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -16,6 +18,20 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+  }
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  void onRefresh() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    _refreshController.refreshCompleted();
+  }
+
+  void onLoading() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    if (mounted) setState(() {});
+    _refreshController.refreshCompleted();
   }
 
   final double ukuranFont = 18.0;
@@ -176,8 +192,36 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         actions: <Widget>[],
       ),
-      body: RefreshIndicator(
-        onRefresh: refreshData,
+      body: SmartRefresher(
+        enablePullDown: true,
+        // enablePullUp: true,
+        controller: _refreshController,
+        onRefresh: onRefresh,
+        onLoading: onLoading,
+        physics: BouncingScrollPhysics(),
+        header: WaterDropMaterialHeader(),
+        footer: CustomFooter(
+          builder: (BuildContext context, LoadStatus mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text("Pull up load");
+            } else if (mode == LoadStatus.loading) {
+              body = CupertinoActivityIndicator();
+            } else if (mode == LoadStatus.failed) {
+              body = Text("Load Failed! Click retry");
+            } else if (mode == LoadStatus.canLoading) {
+              body = Text("release to load more");
+            } else {
+              body = Text("No More Data");
+            }
+            return Container(
+              height: 55.0,
+              child: Center(
+                child: body,
+              ),
+            );
+          },
+        ),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -229,10 +273,6 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-  }
-
-  Future refreshData() async {
-    setState(() {});
   }
 }
 

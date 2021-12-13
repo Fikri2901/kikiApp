@@ -5,8 +5,6 @@ import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/jenis.dart';
 // ignore: unused_import
 import 'package:mongo_dart/mongo_dart.dart' as M;
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'add_barang_page.dart';
 
 class BarangPage extends StatefulWidget {
@@ -18,12 +16,10 @@ class BarangPage extends StatefulWidget {
 
 class _BarangPageState extends State<BarangPage> {
   TextEditingController cariController = new TextEditingController();
-  String _admin = "";
   String searchString = "";
   @override
   void initState() {
     super.initState();
-    _panggilAdmin();
   }
 
   @override
@@ -87,23 +83,21 @@ class _BarangPageState extends State<BarangPage> {
                   ),
                 ],
               ),
-              floatingActionButton: _admin == 'kikicell'
-                  ? FloatingActionButton(
-                      heroTag: 'btnTambah',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) {
-                              return AddBarangPage(
-                                  nama: jenis.nama, idJenis: jenis.id.toJson());
-                            },
-                          ),
-                        ).then((value) => setState(() {}));
+              floatingActionButton: FloatingActionButton(
+                heroTag: 'btnTambah',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) {
+                        return AddBarangPage(
+                            nama: jenis.nama, idJenis: jenis.id.toJson());
                       },
-                      child: Icon(Icons.add),
-                    )
-                  : null,
+                    ),
+                  ).then((value) => setState(() {}));
+                },
+                child: Icon(Icons.add),
+              ),
             );
           } else {
             if (snapshot.hasError) {
@@ -153,19 +147,17 @@ class _BarangPageState extends State<BarangPage> {
                     ),
                   ),
                 ),
-                floatingActionButton: _admin == 'kikicell'
-                    ? FloatingActionButton(
-                        heroTag: 'btnTambah',
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (BuildContext context) {
-                            return AddBarangPage(
-                                nama: jenis.nama, idJenis: jenis.id.toJson());
-                          })).then((value) => setState(() {}));
-                        },
-                        child: Icon(Icons.add),
-                      )
-                    : null,
+                floatingActionButton: FloatingActionButton(
+                  heroTag: 'btnTambah',
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return AddBarangPage(
+                          nama: jenis.nama, idJenis: jenis.id.toJson());
+                    })).then((value) => setState(() {}));
+                  },
+                  child: Icon(Icons.add),
+                ),
               );
             } else {
               return Scaffold(
@@ -226,54 +218,37 @@ class _BarangPageState extends State<BarangPage> {
                                     .contains(searchString)
                                 ? Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: _admin == 'kikicell'
-                                        ? Hero(
-                                            tag: 'list',
-                                            child: BarangCard(
-                                              barang: Barang.fromMap(
-                                                  snapshot.data[index]),
-                                              txtAdmin: _admin,
-                                              onLongDelete: () {
-                                                showAlertHapus(Barang.fromMap(
-                                                    snapshot.data[index]));
+                                    child: Hero(
+                                      tag: 'list',
+                                      child: BarangCard(
+                                        barang: Barang.fromMap(
+                                            snapshot.data[index]),
+                                        onLongDelete: () {
+                                          showAlertHapus(Barang.fromMap(
+                                              snapshot.data[index]));
+                                        },
+                                        onTapEdit: () async {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (BuildContext context) {
+                                                return AddBarangPage(
+                                                    nama: jenis.nama,
+                                                    idJenis: jenis.id.toJson());
                                               },
-                                              onTapEdit: () async {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AddBarangPage(
-                                                          nama: jenis.nama,
-                                                          idJenis: jenis.id
-                                                              .toJson());
-                                                    },
-                                                    settings: RouteSettings(
-                                                      arguments: Barang.fromMap(
-                                                          snapshot.data[index]),
-                                                    ),
-                                                  ),
-                                                ).then(
-                                                    (value) => setState(() {}));
-                                              },
-                                              onPress: () {
-                                                showDetail(Barang.fromMap(
-                                                    snapshot.data[index]));
-                                              },
+                                              settings: RouteSettings(
+                                                arguments: Barang.fromMap(
+                                                    snapshot.data[index]),
+                                              ),
                                             ),
-                                          )
-                                        : Hero(
-                                            tag: 'detailBarang',
-                                            child: BarangCard(
-                                              barang: Barang.fromMap(
-                                                  snapshot.data[index]),
-                                              txtAdmin: _admin,
-                                              onPress: () {
-                                                showDetail(Barang.fromMap(
-                                                    snapshot.data[index]));
-                                              },
-                                            ),
-                                          ),
+                                          ).then((value) => setState(() {}));
+                                        },
+                                        onPress: () {
+                                          showDetail(Barang.fromMap(
+                                              snapshot.data[index]));
+                                        },
+                                      ),
+                                    ),
                                   )
                                 : Container();
                           },
@@ -282,24 +257,21 @@ class _BarangPageState extends State<BarangPage> {
                     ),
                   ],
                 ),
-                floatingActionButton: _admin == 'kikicell'
-                    ? FloatingActionButton(
-                        heroTag: 'btnTambah',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) {
-                                return AddBarangPage(
-                                    nama: jenis.nama,
-                                    idJenis: jenis.id.toJson());
-                              },
-                            ),
-                          ).then((value) => setState(() {}));
+                floatingActionButton: FloatingActionButton(
+                  heroTag: 'btnTambah',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return AddBarangPage(
+                              nama: jenis.nama, idJenis: jenis.id.toJson());
                         },
-                        child: Icon(Icons.add),
-                      )
-                    : null,
+                      ),
+                    ).then((value) => setState(() {}));
+                  },
+                  child: Icon(Icons.add),
+                ),
               );
             }
           }
@@ -310,16 +282,6 @@ class _BarangPageState extends State<BarangPage> {
     final Jenis jenis = ModalRoute.of(context).settings.arguments;
     await MongoDatabase.getDocumentBarangById(jenis);
     setState(() {});
-  }
-
-  void _panggilAdmin() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-
-    setState(() {
-      if (pref.getString('admin') != null) {
-        _admin = pref.getString('admin');
-      }
-    });
   }
 
   showDetail(Barang barang) {

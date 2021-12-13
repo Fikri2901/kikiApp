@@ -78,6 +78,13 @@ class _AllBarangPageState extends State<AllBarangPage> {
               barang: Barang.fromMap(
                 _searchResult[index].toMap(),
               ),
+              detailBarang: () {
+                showDetail(
+                  Barang.fromMap(
+                    _searchResult[index].toMap(),
+                  ),
+                );
+              },
             ),
           ),
         );

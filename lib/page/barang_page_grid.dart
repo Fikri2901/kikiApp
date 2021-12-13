@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bson/bson.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kikiapp/component/barang_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/barang.dart';
 import 'package:kikiapp/models/jenis.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class BarangPage extends StatefulWidget {
   final String idJenis, namaJenis;
@@ -19,8 +21,21 @@ class _BarangPageState extends State<BarangPage> {
   List<Barang> _searchResult = [];
   List<Barang> _barang = [];
   TextEditingController cariText = new TextEditingController();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
-  // Get json result and convert it to model. Then add
+  void onRefresh() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    _refreshController.refreshCompleted();
+  }
+
+  void onLoading() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    getBarang();
+    if (mounted) setState(() {});
+    _refreshController.refreshCompleted();
+  }
+
   Future<Null> getBarang() async {
     print(this.widget.idJenis);
     final resp = await MongoDatabase.getBarangById(this.widget.idJenis);
@@ -82,6 +97,13 @@ class _BarangPageState extends State<BarangPage> {
               barang: Barang.fromMap(
                 _searchResult[index].toMap(),
               ),
+              detailBarang: () {
+                showDetail(
+                  Barang.fromMap(
+                    _searchResult[index].toMap(),
+                  ),
+                );
+              },
             ),
           ),
         );
@@ -122,8 +144,36 @@ class _BarangPageState extends State<BarangPage> {
           child: _searchBox(),
         ),
         Expanded(
-          child: new RefreshIndicator(
-              onRefresh: refreshBarang,
+          child: SmartRefresher(
+              enablePullDown: true,
+              // enablePullUp: true,
+              controller: _refreshController,
+              onRefresh: onRefresh,
+              onLoading: onLoading,
+              physics: BouncingScrollPhysics(),
+              header: WaterDropMaterialHeader(),
+              footer: CustomFooter(
+                builder: (BuildContext context, LoadStatus mode) {
+                  Widget body;
+                  if (mode == LoadStatus.idle) {
+                    body = Text("Pull up load");
+                  } else if (mode == LoadStatus.loading) {
+                    body = CupertinoActivityIndicator();
+                  } else if (mode == LoadStatus.failed) {
+                    body = Text("Load Failed! Click retry");
+                  } else if (mode == LoadStatus.canLoading) {
+                    body = Text("release to load more");
+                  } else {
+                    body = Text("No More Data");
+                  }
+                  return Container(
+                    height: 55.0,
+                    child: Center(
+                      child: body,
+                    ),
+                  );
+                },
+              ),
               child: _searchResult.length != 0 || cariText.text.isNotEmpty
                   ? _hasilCari()
                   : _barangList()),
@@ -142,11 +192,6 @@ class _BarangPageState extends State<BarangPage> {
       body: _body(),
       // resizeToAvoidBottomPadding: true,
     );
-  }
-
-  Future refreshBarang() async {
-    await MongoDatabase.getBarangById(this.widget.idJenis);
-    setState(() {});
   }
 
   showDetail(Barang barang) {

@@ -23,7 +23,7 @@ class _AddBarangPageState extends State<AddBarangPage> {
   bool _validasi = false;
 
   String _formatNumber(String s) =>
-      NumberFormat.decimalPattern('en').format(int.parse(s));
+      NumberFormat.decimalPattern('id').format(int.parse(s));
   String get _currency =>
       NumberFormat.compactSimpleCurrency(locale: 'id').currencySymbol;
 
@@ -101,7 +101,7 @@ class _AddBarangPageState extends State<AddBarangPage> {
                         ),
                       ),
                       onChanged: (string) {
-                        string = '${_formatNumber(string.replaceAll(',', ''))}';
+                        string = '${_formatNumber(string.replaceAll('.', ''))}';
                         ecerController.value = TextEditingValue(
                           text: string,
                           selection:
@@ -130,7 +130,7 @@ class _AddBarangPageState extends State<AddBarangPage> {
                         ),
                         onChanged: (string) {
                           string =
-                              '${_formatNumber(string.replaceAll(',', ''))}';
+                              '${_formatNumber(string.replaceAll('.', ''))}';
                           grosirController.value = TextEditingValue(
                             text: string,
                             selection:

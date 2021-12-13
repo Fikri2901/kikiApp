@@ -1,12 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:kikiapp/login.dart';
 import 'package:kikiapp/models/jenis.dart';
 import 'package:kikiapp/component/jenis_card.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/navbarButtom.dart';
-// ignore: unused_import
 import 'package:kikiapp/page/add_jenis_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kikiapp/page/barang_page.dart';
@@ -19,39 +15,21 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  String _admin = "";
   String searchString = "";
   TextEditingController cariController = new TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _panggilAdmin();
   }
 
   Widget _tombol() {
-    if (_admin == 'kikicell') {
-      return IconButton(
-        icon: Icon(Icons.lock_open),
-        onPressed: () {
-          showLogout();
-        },
-      );
-    } else {
-      return IconButton(
-        icon: Icon(Icons.lock),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) {
-                return LoginPage();
-              },
-            ),
-          );
-        },
-      );
-    }
+    return IconButton(
+      icon: Icon(Icons.lock_open),
+      onPressed: () {
+        showLogout();
+      },
+    );
   }
 
   @override
@@ -117,18 +95,18 @@ class _HomepageState extends State<Homepage> {
                   ),
                 ],
               ),
-              floatingActionButton: _admin == 'kikicell'
-                  ? FloatingActionButton(
-                      heroTag: 'btnTambah',
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (BuildContext context) {
-                          return AddJenisPage();
-                        })).then((value) => setState(() {}));
-                      },
-                      child: Icon(Icons.add),
-                    )
-                  : null,
+              floatingActionButton: FloatingActionButton(
+                heroTag: 'btnTambah',
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                    return AddJenisPage();
+                  })).then(
+                    (value) => setState(() {}),
+                  );
+                },
+                child: Icon(Icons.add),
+              ),
             );
           } else {
             if (snapshot.hasError) {
@@ -182,18 +160,18 @@ class _HomepageState extends State<Homepage> {
                     ),
                   ),
                 ),
-                floatingActionButton: _admin == 'kikicell'
-                    ? FloatingActionButton(
-                        heroTag: 'btnTambah',
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (BuildContext context) {
-                            return AddJenisPage();
-                          })).then((value) => setState(() {}));
-                        },
-                        child: Icon(Icons.add),
-                      )
-                    : null,
+                floatingActionButton: FloatingActionButton(
+                  heroTag: 'btnTambah',
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return AddJenisPage();
+                    })).then(
+                      (value) => setState(() {}),
+                    );
+                  },
+                  child: Icon(Icons.add),
+                ),
               );
             } else {
               return Scaffold(
@@ -256,74 +234,45 @@ class _HomepageState extends State<Homepage> {
                                     .contains(searchString)
                                 ? Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: _admin == 'kikicell'
-                                        ? Hero(
-                                            tag: 'list',
-                                            child: JenisCard(
-                                              jenis: Jenis.fromMap(
-                                                  snapshot.data[index]),
-                                              txtAdmin: _admin,
-                                              onLongDelete: () {
-                                                showAlertHapus(Jenis.fromMap(
-                                                    snapshot.data[index]));
+                                    child: Hero(
+                                      tag: 'list',
+                                      child: JenisCard(
+                                        jenis:
+                                            Jenis.fromMap(snapshot.data[index]),
+                                        onLongDelete: () {
+                                          showAlertHapus(Jenis.fromMap(
+                                              snapshot.data[index]));
+                                        },
+                                        onTapEdit: () async {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (BuildContext context) {
+                                                return AddJenisPage();
                                               },
-                                              onTapEdit: () async {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AddJenisPage();
-                                                    },
-                                                    settings: RouteSettings(
-                                                      arguments: Jenis.fromMap(
-                                                          snapshot.data[index]),
-                                                    ),
-                                                  ),
-                                                ).then(
-                                                    (value) => setState(() {}));
-                                              },
-                                              onTapListBarang: () async {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return BarangPage();
-                                                    },
-                                                    settings: RouteSettings(
-                                                      arguments: Jenis.fromMap(
-                                                          snapshot.data[index]),
-                                                    ),
-                                                  ),
-                                                ).then(
-                                                    (value) => setState(() {}));
-                                              },
+                                              settings: RouteSettings(
+                                                arguments: Jenis.fromMap(
+                                                    snapshot.data[index]),
+                                              ),
                                             ),
-                                          )
-                                        : Hero(
-                                            tag: 'list',
-                                            child: JenisCard(
-                                              jenis: Jenis.fromMap(
-                                                  snapshot.data[index]),
-                                              onTapListBarang: () async {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return BarangPage();
-                                                    },
-                                                    settings: RouteSettings(
-                                                      arguments: Jenis.fromMap(
-                                                          snapshot.data[index]),
-                                                    ),
-                                                  ),
-                                                ).then(
-                                                    (value) => setState(() {}));
+                                          ).then((value) => setState(() {}));
+                                        },
+                                        onTapListBarang: () async {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (BuildContext context) {
+                                                return BarangPage();
                                               },
+                                              settings: RouteSettings(
+                                                arguments: Jenis.fromMap(
+                                                    snapshot.data[index]),
+                                              ),
                                             ),
-                                          ),
+                                          ).then((value) => setState(() {}));
+                                        },
+                                      ),
+                                    ),
                                   )
                                 : Container();
                           },
@@ -332,18 +281,16 @@ class _HomepageState extends State<Homepage> {
                     )
                   ],
                 ),
-                floatingActionButton: _admin == 'kikicell'
-                    ? FloatingActionButton(
-                        heroTag: 'btnTambah',
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (BuildContext context) {
-                            return AddJenisPage();
-                          })).then((value) => setState(() {}));
-                        },
-                        child: Icon(Icons.add),
-                      )
-                    : null,
+                floatingActionButton: FloatingActionButton(
+                  heroTag: 'btnTambah',
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return AddJenisPage();
+                    })).then((value) => setState(() {}));
+                  },
+                  child: Icon(Icons.add),
+                ),
               );
             }
           }
@@ -353,16 +300,6 @@ class _HomepageState extends State<Homepage> {
   Future refreshJenis() async {
     await MongoDatabase.getDocumentJenis();
     setState(() {});
-  }
-
-  void _panggilAdmin() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-
-    setState(() {
-      if (pref.getString('admin') != null) {
-        _admin = pref.getString('admin');
-      }
-    });
   }
 
   showLogout() {
