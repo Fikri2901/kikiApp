@@ -19,9 +19,6 @@ class JenisCard extends StatelessWidget {
       elevation: 2.0,
       color: Colors.white,
       child: ListTile(
-        // leading: Text(
-        //   ''
-        // ),
         onTap: onTapListBarang,
         onLongPress: onLongDelete,
         title: Text(jenis.nama),

@@ -18,26 +18,160 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
+  Widget menuIcon() {
+    return GridView.count(
+      primary: true,
+      physics: NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(top: 20.0),
+      crossAxisCount: 4,
+      children: <Widget>[
+        Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: IconButton(
+                iconSize: 50.0,
+                icon: Icon(Icons.inventory, color: Colors.blue[300]),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                    return AllBarangPage();
+                  })).then((value) => setState(() {}));
+                },
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(
+                  'Barang',
+                  style: TextStyle(
+                    fontSize: 11.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+        Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: IconButton(
+                iconSize: 50.0,
+                icon: Icon(Icons.book_rounded, color: Colors.lightGreen),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Data semua Hutang'),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(
+                  'Hutang',
+                  style: TextStyle(
+                    fontSize: 11.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+        Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: IconButton(
+                iconSize: 50.0,
+                icon: Icon(Icons.library_books, color: Colors.orange[300]),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Data semua Token Listrik'),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(
+                  'Token Listrik',
+                  style: TextStyle(
+                    fontSize: 11.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+        Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: IconButton(
+                iconSize: 50.0,
+                icon: Icon(Icons.list_alt_rounded, color: Colors.purple[300]),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Data semua Bayar Listrik',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(
+                  'Bayar Listrik',
+                  style: TextStyle(
+                    fontSize: 11.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Kiki Cell'),
         centerTitle: true,
-        actions: <Widget>[
-          // IconButton(
-          //   icon: Icon(Icons.lock),
-          //   color: Colors.white,
-          //   onPressed: () {
-          //     Navigator.push(context,
-          //         MaterialPageRoute(builder: (BuildContext context) {
-          //       return LoginPage();
-          //     }));
-          // final tampil = SnackBar(content: Text('Yay! A SnackBar!'));
-          // ScaffoldMessenger.of(context).showSnackBar(tampil);
-          // },
-          // ),
-        ],
+        actions: <Widget>[],
       ),
       body: RefreshIndicator(
         onRefresh: refreshData,
@@ -80,164 +214,12 @@ class _HomeState extends State<Home> {
               ),
               Container(
                 margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-                height: 110.0,
+                height: 125.0,
                 decoration: BoxDecoration(
                   color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Column(
-                  children: [
-                    new Row(
-                      children: [
-                        new Padding(
-                          padding: EdgeInsets.only(left: 15.0, top: 10.0),
-                          child: Column(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: IconButton(
-                                  iconSize: 50.0,
-                                  icon: Icon(Icons.inventory,
-                                      color: Colors.blue[300]),
-                                  onPressed: () {
-                                    Navigator.push(context, MaterialPageRoute(
-                                        builder: (BuildContext context) {
-                                      return AllBarangPage();
-                                    })).then((value) => setState(() {}));
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 7.0),
-                                child: Text(
-                                  'Barang',
-                                  style: TextStyle(
-                                    fontSize: 11.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        new Padding(
-                          padding: EdgeInsets.only(left: 15.0, top: 10.0),
-                          child: Column(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: IconButton(
-                                  iconSize: 50.0,
-                                  icon: Icon(Icons.book_rounded,
-                                      color: Colors.lightGreen),
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Data semua Hutang'),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 7.0),
-                                child: Text(
-                                  'Hutang',
-                                  style: TextStyle(
-                                    fontSize: 11.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        new Padding(
-                          padding: EdgeInsets.only(left: 15.0, top: 10.0),
-                          child: Column(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: IconButton(
-                                  iconSize: 50.0,
-                                  icon: Icon(Icons.library_books,
-                                      color: Colors.orange[300]),
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content:
-                                            Text('Data semua Token Listrik'),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 7.0),
-                                child: Text(
-                                  'Token Listrik',
-                                  style: TextStyle(
-                                    fontSize: 11.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        new Padding(
-                          padding: EdgeInsets.only(left: 15.0, top: 10.0),
-                          child: Column(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: IconButton(
-                                  iconSize: 50.0,
-                                  icon: Icon(Icons.list_alt_rounded,
-                                      color: Colors.purple[300]),
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Data semua Bayar Listrik',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 7.0),
-                                child: Text(
-                                  'Bayar Listrik',
-                                  style: TextStyle(
-                                    fontSize: 11.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                child: menuIcon(),
               )
             ],
           ),
