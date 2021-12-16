@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kikiapp/models/user.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:kikiapp/models/jenis.dart';
@@ -9,7 +10,7 @@ class MongoDatabase {
 
   static connect() async {
     db = await Db.create(URL_KONEK_MONGODB);
-    await db.open();
+    await db.open(secure: true);
     jenisCollection = db.collection(JENIS_COLLECTION);
     barangCollection = db.collection(BARANG_COLLECTION);
     userCollection = db.collection(USER_COLLECTION);
@@ -32,13 +33,18 @@ class MongoDatabase {
   static updateJenis(Jenis jenis) async {
     var u = await jenisCollection.findOne({"_id": jenis.id});
     u["nama"] = jenis.nama;
+    u["gambar"] = jenis.gambar;
     u["tanggal_upload"] = u["tanggal_upload"];
     u["tanggal_update"] = DateTime.now().toString();
     await jenisCollection.save(u);
   }
 
   static deleteJenis(Jenis jenis) async {
-    await jenisCollection.remove(where.id(jenis.id));
+    final deleteLink =
+        FirebaseStorage.instance.refFromURL(jenis.gambar).delete();
+    if (deleteLink != null) {
+      await jenisCollection.remove(where.id(jenis.id));
+    }
   }
   //==================== Barang ==========================//
 
@@ -83,6 +89,7 @@ class MongoDatabase {
     var u = await barangCollection.findOne({"_id": barang.id});
     u["nama"] = barang.nama;
     u["id_jenis"] = barang.id_jenis;
+    u["gambar"] = barang.gambar;
     u["harga_ecer"] = barang.harga_ecer;
     u["harga_grosir"] = barang.harga_grosir;
     u["tanggal_upload"] = u["tanggal_upload"];
@@ -91,7 +98,10 @@ class MongoDatabase {
   }
 
   static deleteBarang(Barang barang) async {
-    await barangCollection.remove(where.id(barang.id));
+    final delete = FirebaseStorage.instance.refFromURL(barang.gambar).delete();
+    if (delete != null) {
+      await barangCollection.remove(where.id(barang.id));
+    }
   }
 
   //================== LOGIN ========================//

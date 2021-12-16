@@ -1,9 +1,15 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kikiapp/database/database.dart';
+import 'package:kikiapp/database/uploadFirebase.dart';
 import 'package:kikiapp/models/barang.dart';
 import 'package:mongo_dart/mongo_dart.dart' as M;
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 
 // ignore: must_be_immutable
 class AddBarangPage extends StatefulWidget {
@@ -27,6 +33,20 @@ class _AddBarangPageState extends State<AddBarangPage> {
   String get _currency =>
       NumberFormat.compactSimpleCurrency(locale: 'id').currencySymbol;
 
+  File file;
+  UploadTask task;
+  String namaGambar = null;
+
+  Future selectfile() async {
+    final ambil = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+    if (ambil == null) return;
+    final pat = ambil.files.single.path;
+    setState(() {
+      file = File(pat);
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -38,6 +58,9 @@ class _AddBarangPageState extends State<AddBarangPage> {
 
   @override
   Widget build(BuildContext context) {
+    final filename =
+        file != null ? basename(file.path) : 'file upload belum ada';
+
     final Barang barang = ModalRoute.of(context).settings.arguments;
     var widgetText = 'Tambah ${this.widget.nama}';
     if (barang != null) {
@@ -45,6 +68,7 @@ class _AddBarangPageState extends State<AddBarangPage> {
       idJenisController.text = barang.id_jenis;
       ecerController.text = barang.harga_ecer;
       grosirController.text = barang.harga_grosir;
+      namaGambar = barang.gambar;
       widgetText = 'Update ${barang.nama}';
     }
     return Scaffold(
@@ -65,20 +89,66 @@ class _AddBarangPageState extends State<AddBarangPage> {
               autovalidate: true,
               child: Column(
                 children: [
+                  namaGambar != null
+                      ? Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20.0),
+                              // ignore: deprecated_member_use
+                              child: Image.network(
+                                barang.gambar,
+                                width: 100.0,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress
+                                                  .expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes
+                                          : null,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 20.0, left: 20.0, right: 20.0),
+                              // ignore: deprecated_member_use
+                              child: Text(filename),
+                            ),
+                          ],
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(
+                              top: 20.0, left: 20.0, right: 20.0),
+                          // ignore: deprecated_member_use
+                          child: Text(filename),
+                        ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    // ignore: deprecated_member_use
+                    child: RaisedButton(
+                      onPressed: selectfile,
+                      child: Text('Pilih Gambar'),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(
                         top: 20.0, left: 20.0, right: 20.0),
-                    child: Hero(
-                      tag: 'list',
-                      child: TextFormField(
-                        validator: validatorNama,
-                        controller: namaController,
-                        decoration: InputDecoration(
-                          labelText: 'Nama',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(10.0),
-                            ),
+                    child: TextFormField(
+                      validator: validatorNama,
+                      controller: namaController,
+                      decoration: InputDecoration(
+                        labelText: 'Nama',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10.0),
                           ),
                         ),
                       ),
@@ -113,31 +183,27 @@ class _AddBarangPageState extends State<AddBarangPage> {
                   Padding(
                     padding: const EdgeInsets.only(
                         top: 20.0, left: 20.0, right: 20.0),
-                    child: Hero(
-                      tag: 'list',
-                      child: TextFormField(
-                        validator: validatorGrosir,
-                        controller: grosirController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Harga Grosir',
-                          prefixText: _currency,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(10.0),
-                            ),
+                    child: TextFormField(
+                      validator: validatorGrosir,
+                      controller: grosirController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Harga Grosir',
+                        prefixText: _currency,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10.0),
                           ),
                         ),
-                        onChanged: (string) {
-                          string =
-                              '${_formatNumber(string.replaceAll('.', ''))}';
-                          grosirController.value = TextEditingValue(
-                            text: string,
-                            selection:
-                                TextSelection.collapsed(offset: string.length),
-                          );
-                        },
                       ),
+                      onChanged: (string) {
+                        string = '${_formatNumber(string.replaceAll('.', ''))}';
+                        grosirController.value = TextEditingValue(
+                          text: string,
+                          selection:
+                              TextSelection.collapsed(offset: string.length),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -213,36 +279,85 @@ class _AddBarangPageState extends State<AddBarangPage> {
   }
 
   insertBarang() async {
+    if (file == null) {
+      return;
+    }
+
+    final fileName = basename(file.path);
+    final destination = 'barang/$fileName';
+
+    task = UploadImageFirebaseAPI.uploadFile(destination, file);
+    setState(() {});
+    if (task == null) return;
+    final snapshoot = await task.whenComplete(() {});
+    final urlDownload = await snapshoot.ref.getDownloadURL();
+    print(urlDownload);
+
     final barang = Barang(
         id: M.ObjectId(),
         nama: namaController.text,
         id_jenis: this.widget.idJenis,
+        gambar: urlDownload,
         harga_grosir: grosirController.text,
         harga_ecer: ecerController.text,
         tanggal_upload: DateTime.now().toString(),
         tanggal_update: DateTime.now().toString());
     await MongoDatabase.insertBarang(barang);
-    Navigator.pop(context);
+    Navigator.pop(this.context);
 
     final aTambah = SnackBar(
         content: Text('${namaController.text} Berhasil di Tambahkan !!'));
-    ScaffoldMessenger.of(context).showSnackBar(aTambah);
+    ScaffoldMessenger.of(this.context).showSnackBar(aTambah);
   }
 
   updateBarang(Barang barang) async {
-    print('updating : ${namaController.text}');
-    final b = Barang(
-      id: barang.id,
-      nama: namaController.text,
-      id_jenis: this.widget.idJenis,
-      harga_ecer: ecerController.text,
-      harga_grosir: grosirController.text,
-    );
-    await MongoDatabase.updateBarang(b);
-    Navigator.pop(context);
+    if (file == null) {
+      final b = Barang(
+        id: barang.id,
+        nama: namaController.text,
+        gambar: barang.gambar,
+        id_jenis: this.widget.idJenis,
+        harga_ecer: ecerController.text,
+        harga_grosir: grosirController.text,
+      );
+      await MongoDatabase.updateBarang(b);
+      Navigator.pop(this.context);
 
-    final aUpdate =
-        SnackBar(content: Text('${barang.nama} Berhasil diupdate !!'));
-    ScaffoldMessenger.of(context).showSnackBar(aUpdate);
+      ScaffoldMessenger.of(this.context).showSnackBar(
+        SnackBar(
+          content: Text('${barang.nama} Berhasil di update !!'),
+        ),
+      );
+    }
+
+    final fileName = basename(file.path);
+
+    if (fileName != null) {
+      FirebaseStorage.instance.refFromURL(barang.gambar).delete();
+      final destination = 'barang/$fileName';
+
+      task = UploadImageFirebaseAPI.uploadFile(destination, file);
+      setState(() {});
+      if (task == null) return;
+      final snapshoot = await task.whenComplete(() {});
+      final urlDownload = await snapshoot.ref.getDownloadURL();
+      print(urlDownload);
+
+      final barang2 = Barang(
+          id: barang.id,
+          nama: namaController.text,
+          id_jenis: this.widget.idJenis,
+          gambar: urlDownload,
+          harga_grosir: grosirController.text,
+          harga_ecer: ecerController.text,
+          tanggal_upload: DateTime.now().toString(),
+          tanggal_update: DateTime.now().toString());
+      await MongoDatabase.updateBarang(barang2);
+      Navigator.pop(this.context);
+
+      final aTambah = SnackBar(
+          content: Text('${namaController.text} Berhasil di Update !!'));
+      ScaffoldMessenger.of(this.context).showSnackBar(aTambah);
+    }
   }
 }

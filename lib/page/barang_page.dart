@@ -218,36 +218,33 @@ class _BarangPageState extends State<BarangPage> {
                                     .contains(searchString)
                                 ? Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Hero(
-                                      tag: 'list',
-                                      child: BarangCard(
-                                        barang: Barang.fromMap(
-                                            snapshot.data[index]),
-                                        onLongDelete: () {
-                                          showAlertHapus(Barang.fromMap(
-                                              snapshot.data[index]));
-                                        },
-                                        onTapEdit: () async {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (BuildContext context) {
-                                                return AddBarangPage(
-                                                    nama: jenis.nama,
-                                                    idJenis: jenis.id.toJson());
-                                              },
-                                              settings: RouteSettings(
-                                                arguments: Barang.fromMap(
-                                                    snapshot.data[index]),
-                                              ),
+                                    child: BarangCard(
+                                      barang:
+                                          Barang.fromMap(snapshot.data[index]),
+                                      onLongDelete: () {
+                                        showAlertHapus(Barang.fromMap(
+                                            snapshot.data[index]));
+                                      },
+                                      onTapEdit: () async {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (BuildContext context) {
+                                              return AddBarangPage(
+                                                  nama: jenis.nama,
+                                                  idJenis: jenis.id.toJson());
+                                            },
+                                            settings: RouteSettings(
+                                              arguments: Barang.fromMap(
+                                                  snapshot.data[index]),
                                             ),
-                                          ).then((value) => setState(() {}));
-                                        },
-                                        onPress: () {
-                                          showDetail(Barang.fromMap(
-                                              snapshot.data[index]));
-                                        },
-                                      ),
+                                          ),
+                                        ).then((value) => setState(() {}));
+                                      },
+                                      onPress: () {
+                                        showDetail(Barang.fromMap(
+                                            snapshot.data[index]));
+                                      },
                                     ),
                                   )
                                 : Container();

@@ -185,6 +185,7 @@ class _BarangPageState extends State<BarangPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: new AppBar(
         title: new Text(this.widget.namaJenis),
         elevation: 0.0,

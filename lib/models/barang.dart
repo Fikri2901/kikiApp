@@ -5,6 +5,7 @@ class Barang {
   final String nama;
   // ignore: non_constant_identifier_names
   final String id_jenis;
+  final String gambar;
   // ignore: non_constant_identifier_names
   final String harga_grosir;
   // ignore: non_constant_identifier_names
@@ -20,6 +21,7 @@ class Barang {
       // ignore: non_constant_identifier_names
       this.id_jenis,
       this.nama,
+      this.gambar,
       // ignore: non_constant_identifier_names
       this.harga_ecer,
       // ignore: non_constant_identifier_names
@@ -33,6 +35,7 @@ class Barang {
     return {
       '_id': id,
       'nama': nama,
+      'gambar': gambar,
       'id_jenis': id_jenis,
       'harga_grosir': harga_grosir,
       'harga_ecer': harga_ecer,
@@ -44,6 +47,7 @@ class Barang {
   Barang.fromMap(Map<String, dynamic> map)
       : nama = map['nama'],
         id = map['_id'],
+        gambar = map['gambar'],
         id_jenis = map['id_jenis'],
         harga_ecer = map['harga_ecer'],
         harga_grosir = map['harga_grosir'],

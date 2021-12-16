@@ -16,6 +16,7 @@ class BarangCard extends StatelessWidget {
       child: ListTile(
         onTap: onPress,
         onLongPress: onLongDelete,
+        leading: Image.network(barang.gambar),
         title: Text(barang.nama),
         subtitle: Text('Harga : Rp. ${barang.harga_ecer},00'),
         trailing: Column(

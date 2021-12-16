@@ -29,8 +29,8 @@ class JenisCardGrid extends StatelessWidget {
               Container(
                 width: 100.0,
                 height: 100.0,
-                child: Image.asset(
-                  'assets/inventori.png',
+                child: Image.network(
+                  jenis.gambar,
                 ),
               ),
               Padding(

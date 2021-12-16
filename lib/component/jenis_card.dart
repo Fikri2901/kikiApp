@@ -16,6 +16,7 @@ class JenisCard extends StatelessWidget {
       child: ListTile(
         onTap: onTapListBarang,
         onLongPress: onLongDelete,
+        leading: Image.network(jenis.gambar),
         title: Text(jenis.nama),
         subtitle: Text('update: ${jenis.tanggal_update}'),
         trailing: Column(

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "458863365337",
+    "project_id": "kikicellapp",
+    "storage_bucket": "kikicellapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458863365337:android:18fb2ebb395491633a02c8",
+        "android_client_info": {
+          "package_name": "com.example.kikiapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "458863365337-ivt9agah45q1gokc92k7b0df59u5ampl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2PiqB-yzBoc5Yp36_bs1aOzDdXAVT9Us"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "458863365337-ivt9agah45q1gokc92k7b0df59u5ampl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

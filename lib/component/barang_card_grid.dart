@@ -23,14 +23,14 @@ class BarangCardGrid extends StatelessWidget {
               Container(
                 width: 100.0,
                 height: 100.0,
-                child: Image.asset(
-                  'assets/inventori.png',
+                child: Image.network(
+                  barang.gambar,
                 ),
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 10.0, left: 3.0, right: 3.0, bottom: 10.0),
+                  padding:
+                      const EdgeInsets.only(top: 5.0, left: 3.0, right: 3.0),
                   child: Column(
                     children: [
                       Text(
