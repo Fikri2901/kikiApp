@@ -43,20 +43,17 @@ class _AllBarangPageState extends State<AllBarangPage> {
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Hero(
-            tag: 'list',
-            child: BarangCardGrid(
-              barang: Barang.fromMap(
-                _barang[index].toMap(),
-              ),
-              detailBarang: () {
-                showDetail(
-                  Barang.fromMap(
-                    _barang[index].toMap(),
-                  ),
-                );
-              },
+          child: BarangCardGrid(
+            barang: Barang.fromMap(
+              _barang[index].toMap(),
             ),
+            detailBarang: () {
+              showDetail(
+                Barang.fromMap(
+                  _barang[index].toMap(),
+                ),
+              );
+            },
           ),
         );
       },
@@ -72,20 +69,17 @@ class _AllBarangPageState extends State<AllBarangPage> {
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Hero(
-            tag: 'list',
-            child: BarangCardGrid(
-              barang: Barang.fromMap(
-                _searchResult[index].toMap(),
-              ),
-              detailBarang: () {
-                showDetail(
-                  Barang.fromMap(
-                    _searchResult[index].toMap(),
-                  ),
-                );
-              },
+          child: BarangCardGrid(
+            barang: Barang.fromMap(
+              _searchResult[index].toMap(),
             ),
+            detailBarang: () {
+              showDetail(
+                Barang.fromMap(
+                  _searchResult[index].toMap(),
+                ),
+              );
+            },
           ),
         );
       },

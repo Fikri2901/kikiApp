@@ -58,26 +58,21 @@ class _JenisPageState extends State<JenisPage> {
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Hero(
-            tag: 'list',
-            child: JenisCardGrid(
-              jenis: Jenis.fromMap(_jenis[index].toMap()),
-              txtAdmin: null,
-              onTapListBarang: () async {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) {
-                      return BarangPage(
-                          idJenis: _jenis[index].id.toJson(),
-                          namaJenis: _jenis[index].nama);
-                    },
-                  ),
-                ).then(
-                  (value) => setState(() {}),
-                );
-              },
-            ),
+          child: JenisCardGrid(
+            jenis: Jenis.fromMap(_jenis[index].toMap()),
+            txtAdmin: null,
+            onTapListBarang: () async {
+              Navigator.push(
+                context,
+                geserKiriHalaman(
+                  page: BarangPage(
+                      idJenis: _jenis[index].id.toJson(),
+                      namaJenis: _jenis[index].nama),
+                ),
+              ).then(
+                (value) => setState(() {}),
+              );
+            },
           ),
         );
       },
@@ -93,29 +88,19 @@ class _JenisPageState extends State<JenisPage> {
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Hero(
-            tag: 'list',
-            child: JenisCardGrid(
-              jenis: Jenis.fromMap(_searchResult[index].toMap()),
-              txtAdmin: null,
-              onTapListBarang: () async {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) {
-                      return BarangPage(
-                          idJenis: _searchResult[index].id.toJson(),
-                          namaJenis: _searchResult[index].nama);
-                    },
-                    settings: RouteSettings(
-                      arguments: Jenis.fromMap(
-                        _searchResult[index].toMap(),
-                      ),
-                    ),
-                  ),
-                ).then((value) => setState(() {}));
-              },
-            ),
+          child: JenisCardGrid(
+            jenis: Jenis.fromMap(_searchResult[index].toMap()),
+            txtAdmin: null,
+            onTapListBarang: () async {
+              Navigator.push(
+                context,
+                geserKiriHalaman(
+                  page: BarangPage(
+                      idJenis: _searchResult[index].id.toJson(),
+                      namaJenis: _searchResult[index].nama),
+                ),
+              ).then((value) => setState(() {}));
+            },
           ),
         );
       },
@@ -220,4 +205,30 @@ class _JenisPageState extends State<JenisPage> {
 
     setState(() {});
   }
+}
+
+class geserKiriHalaman extends PageRouteBuilder {
+  final Widget page;
+  geserKiriHalaman({this.page})
+      : super(
+          pageBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) =>
+              page,
+          transitionsBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+            Widget child,
+          ) =>
+              SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        );
 }
