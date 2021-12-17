@@ -1,12 +1,22 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kikiapp/models/barang.dart';
-import 'package:kikiapp/models/jenis.dart';
 
 class BarangCardGrid extends StatelessWidget {
   BarangCardGrid({this.barang, this.detailBarang});
 
   final Barang barang;
   final Function detailBarang;
+
+  Widget _loader(BuildContext context, String url) {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _error(BuildContext context, String url, dynamic error) {
+    return const Center(child: Icon(Icons.error));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +33,10 @@ class BarangCardGrid extends StatelessWidget {
               Container(
                 width: 100.0,
                 height: 100.0,
-                child: Image.network(
-                  barang.gambar,
+                child: CachedNetworkImage(
+                  imageUrl: barang.gambar,
+                  placeholder: _loader,
+                  errorWidget: _error,
                 ),
               ),
               Expanded(

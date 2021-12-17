@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/user.dart';
 import 'package:kikiapp/navbarButtom.dart';
+// ignore: unused_import
 import 'package:mongo_dart/mongo_dart.dart' as M;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +16,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController namaController = TextEditingController();
   TextEditingController passController = TextEditingController();
+  // ignore: unused_field
   bool _validasi = false;
 
   @override

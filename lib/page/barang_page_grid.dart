@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:bson/bson.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kikiapp/component/barang_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/barang.dart';
-import 'package:kikiapp/models/jenis.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class BarangPage extends StatefulWidget {

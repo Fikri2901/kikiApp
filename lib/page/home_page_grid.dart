@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:kikiapp/component/jenis_card_grid.dart';
 import 'package:kikiapp/login.dart';
 import 'package:kikiapp/models/jenis.dart';
-import 'package:kikiapp/component/jenis_card.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/navbarButtom.dart';
 // ignore: unused_import

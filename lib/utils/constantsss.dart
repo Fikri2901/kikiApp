@@ -1,0 +1,4 @@
+const URL_KONEK_MONGODB = "";
+const JENIS_COLLECTION = "";
+const BARANG_COLLECTION = "";
+const USER_COLLECTION = "";

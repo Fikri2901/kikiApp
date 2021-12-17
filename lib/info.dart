@@ -352,6 +352,7 @@ class _InfoState extends State<Info> {
                         ),
                         child: menuIcon(),
                       )
+                    // ignore: deprecated_member_use
                     : OutlineButton(
                         onPressed: () {
                           Navigator.push(

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class _AddBarangPageState extends State<AddBarangPage> {
   TextEditingController grosirController = TextEditingController();
   TextEditingController ecerController = TextEditingController();
   TextEditingController idJenisController = TextEditingController();
+  // ignore: unused_field
   bool _validasi = false;
 
   String _formatNumber(String s) =>
@@ -35,6 +37,7 @@ class _AddBarangPageState extends State<AddBarangPage> {
 
   File file;
   UploadTask task;
+  // ignore: avoid_init_to_null
   String namaGambar = null;
 
   Future selectfile() async {
@@ -95,25 +98,15 @@ class _AddBarangPageState extends State<AddBarangPage> {
                             Padding(
                               padding: const EdgeInsets.only(top: 20.0),
                               // ignore: deprecated_member_use
-                              child: Image.network(
-                                barang.gambar,
+                              child: CachedNetworkImage(
+                                progressIndicatorBuilder:
+                                    (context, url, progress) => Center(
+                                  child: CircularProgressIndicator(
+                                    value: progress.progress,
+                                  ),
+                                ),
+                                imageUrl: barang.gambar,
                                 width: 100.0,
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress
-                                                  .expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes
-                                          : null,
-                                    ),
-                                  );
-                                },
                               ),
                             ),
                             Padding(

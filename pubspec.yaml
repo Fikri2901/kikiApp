@@ -36,10 +36,17 @@ dependencies:
   firebase_core: ^0.5.3
   firebase_storage: ^5.2.0
   cached_network_image: ^2.5.1
+  transparent_image: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  flutter_launcher_icons: ^0.8.1
+flutter_icons:
+  ios: true
+  android: "launcher_icon"
+  image_path: "assets/inventori.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

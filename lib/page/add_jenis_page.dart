@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,7 @@ class _AddJenisPageState extends State<AddJenisPage> {
     });
   }
 
+  // ignore: missing_return
   Widget buildUploadStatus(UploadTask task) {
     StreamBuilder<TaskSnapshot>(
       stream: task.snapshotEvents,
@@ -95,8 +97,14 @@ class _AddJenisPageState extends State<AddJenisPage> {
                             Padding(
                               padding: const EdgeInsets.only(top: 20.0),
                               // ignore: deprecated_member_use
-                              child: Image.network(
-                                jenis.gambar,
+                              child: CachedNetworkImage(
+                                progressIndicatorBuilder:
+                                    (context, url, progress) => Center(
+                                  child: CircularProgressIndicator(
+                                    value: progress.progress,
+                                  ),
+                                ),
+                                imageUrl: jenis.gambar,
                                 width: 100.0,
                               ),
                             ),
