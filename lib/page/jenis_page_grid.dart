@@ -207,6 +207,7 @@ class _JenisPageState extends State<JenisPage> {
   }
 }
 
+// ignore: camel_case_types
 class geserKiriHalaman extends PageRouteBuilder {
   final Widget page;
   geserKiriHalaman({this.page})
