@@ -226,39 +226,31 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Kiki Cell'),
-          centerTitle: true,
-          actions: <Widget>[],
-        ),
-        body: EasyRefresh.custom(
-          enableControlFinishRefresh: false,
-          enableControlFinishLoad: true,
-          controller: _refresh,
-          header: DeliveryHeader(),
-          onRefresh: () async {
-            await Future.delayed(
-              Duration(seconds: 2),
-              () {
-                print('onRefresh');
-                setState(
-                  () {},
-                );
-                _refresh.resetLoadState();
-              },
-            );
-          },
-          slivers: <Widget>[
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return tampilan();
-                },
-                childCount: 1,
-              ),
-            ),
-          ],
-        ));
+      appBar: AppBar(
+        title: Text('Kiki Cell'),
+        centerTitle: true,
+        actions: <Widget>[],
+      ),
+      body: EasyRefresh(
+        enableControlFinishRefresh: false,
+        enableControlFinishLoad: true,
+        controller: _refresh,
+        header: DeliveryHeader(),
+        onRefresh: () async {
+          await Future.delayed(
+            Duration(seconds: 2),
+            () {
+              print('onRefresh');
+              setState(
+                () {},
+              );
+              _refresh.resetLoadState();
+            },
+          );
+        },
+        child: tampilan(),
+      ),
+    );
   }
 }
 
