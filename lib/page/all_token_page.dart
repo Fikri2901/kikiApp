@@ -1,30 +1,29 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:kikiapp/component/barang_card_grid.dart';
+import 'package:kikiapp/component/token_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
-import 'package:kikiapp/models/barang.dart';
+import 'package:kikiapp/models/token.dart';
 
-class BarangPage extends StatefulWidget {
+class AllTokenPage extends StatefulWidget {
   final String idJenis, namaJenis;
-  BarangPage({Key key, this.idJenis, this.namaJenis}) : super(key: key);
+  AllTokenPage({Key key, this.idJenis, this.namaJenis}) : super(key: key);
 
   @override
-  _BarangPageState createState() => new _BarangPageState();
+  _AllTokenPageState createState() => new _AllTokenPageState();
 }
 
-class _BarangPageState extends State<BarangPage> {
-  List<Barang> _searchResult = [];
-  List<Barang> _barang = [];
+class _AllTokenPageState extends State<AllTokenPage> {
+  List<Token> _searchResult = [];
+  List<Token> _token = [];
   TextEditingController cariText = new TextEditingController();
   EasyRefreshController _refresh;
 
-  Future<Null> getBarang() async {
-    print(this.widget.idJenis);
-    final resp = await MongoDatabase.getBarangById(this.widget.idJenis);
+  Future<Null> getToken() async {
+    final resp = await MongoDatabase.getTokenListrik();
     setState(() {
-      for (Map barang in resp) {
-        _barang.add(Barang.fromMap(barang));
+      for (Map token in resp) {
+        _token.add(Token.fromMap(token));
       }
     });
   }
@@ -33,26 +32,26 @@ class _BarangPageState extends State<BarangPage> {
   void initState() {
     super.initState();
     _refresh = EasyRefreshController();
-    getBarang();
+    getToken();
   }
 
-  Widget _barangList() {
+  Widget _tokenList() {
     return new GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
       ),
-      itemCount: _barang.length,
+      itemCount: _token.length,
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
-          child: BarangCardGrid(
-            barang: Barang.fromMap(
-              _barang[index].toMap(),
+          child: TokenCardGrid(
+            token: Token.fromMap(
+              _token[index].toMap(),
             ),
-            detailBarang: () {
+            detailToken: () {
               showDetail(
-                Barang.fromMap(
-                  _barang[index].toMap(),
+                Token.fromMap(
+                  _token[index].toMap(),
                 ),
               );
             },
@@ -71,13 +70,13 @@ class _BarangPageState extends State<BarangPage> {
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
-          child: BarangCardGrid(
-            barang: Barang.fromMap(
+          child: TokenCardGrid(
+            token: Token.fromMap(
               _searchResult[index].toMap(),
             ),
-            detailBarang: () {
+            detailToken: () {
               showDetail(
-                Barang.fromMap(
+                Token.fromMap(
                   _searchResult[index].toMap(),
                 ),
               );
@@ -97,8 +96,7 @@ class _BarangPageState extends State<BarangPage> {
           title: new TextField(
             controller: cariText,
             decoration: new InputDecoration(
-                hintText: 'Cari ' + this.widget.namaJenis,
-                border: InputBorder.none),
+                hintText: 'Cari semua Token Listrik', border: InputBorder.none),
             onChanged: onSearchTextChanged,
           ),
           trailing: new IconButton(
@@ -140,10 +138,9 @@ class _BarangPageState extends State<BarangPage> {
             },
             child: _searchResult.length != 0 || cariText.text.isNotEmpty
                 ? _hasilCari()
-                : _barangList(),
+                : _tokenList(),
           ),
         ),
-        // ),
       ],
     );
   }
@@ -151,9 +148,8 @@ class _BarangPageState extends State<BarangPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: new AppBar(
-        title: new Text(this.widget.namaJenis),
+        title: new Text('Token Listrik'),
         elevation: 0.0,
       ),
       body: _body(),
@@ -161,7 +157,12 @@ class _BarangPageState extends State<BarangPage> {
     );
   }
 
-  showDetail(Barang barang) {
+  Future refreshToken() async {
+    await MongoDatabase.getTokenListrik();
+    setState(() {});
+  }
+
+  showDetail(Token token) {
     Widget cancelButton = TextButton(
       child: Text("Tutup"),
       onPressed: () {
@@ -193,7 +194,7 @@ class _BarangPageState extends State<BarangPage> {
                       topRight: Radius.circular(15.0)),
                 ),
                 child: Text(
-                  "${barang.nama}",
+                  "${token.nama}",
                   style: TextStyle(
                       fontSize: 25.0,
                       color: Colors.white,
@@ -209,24 +210,9 @@ class _BarangPageState extends State<BarangPage> {
               padding:
                   const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 8.0),
               child: Text(
-                "Harga Ecer : Rp.${barang.harga_ecer}",
-                textAlign: TextAlign.left,
-              ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 8.0),
-              child: Text(
-                "Harga Grosir : Rp.${barang.harga_grosir}",
-                textAlign: TextAlign.left,
-              ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 8.0),
-              child: Text(
-                "Update : ${barang.tanggal_update}",
-                textAlign: TextAlign.left,
+                token.nomor,
+                style: TextStyle(fontSize: 20.0),
+                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -240,10 +226,7 @@ class _BarangPageState extends State<BarangPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Hero(
-          tag: 'detailBarang',
-          child: alert,
-        );
+        return alert;
       },
     );
   }
@@ -255,9 +238,9 @@ class _BarangPageState extends State<BarangPage> {
       return;
     }
 
-    _barang.forEach((barang) {
-      if (barang.nama.toLowerCase().contains(text.toLowerCase()))
-        _searchResult.add(barang);
+    _token.forEach((token) {
+      if (token.nama.toLowerCase().contains(text.toLowerCase()) ||
+          token.nomor.contains(text)) _searchResult.add(token);
     });
 
     setState(() {});

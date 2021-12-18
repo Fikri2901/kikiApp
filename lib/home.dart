@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/page/all_barang_page.dart';
+import 'package:kikiapp/page/all_token_page.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -40,11 +41,16 @@ class _HomeState extends State<Home> {
               ),
               child: IconButton(
                 iconSize: ukuranIcon,
-                icon: Icon(Icons.inventory, color: Colors.blue[300]),
+                icon: Icon(
+                  Icons.inventory,
+                  color: Colors.blue[300],
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    ZoomAnimasi(page: AllBarangPage()),
+                    ZoomAnimasi(
+                      page: AllBarangPage(),
+                    ),
                   ).then(
                     (value) => setState(() {}),
                   );
@@ -74,7 +80,10 @@ class _HomeState extends State<Home> {
               ),
               child: IconButton(
                 iconSize: ukuranIcon,
-                icon: Icon(Icons.book_rounded, color: Colors.lightGreen),
+                icon: Icon(
+                  Icons.book_rounded,
+                  color: Colors.lightGreen,
+                ),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -107,12 +116,18 @@ class _HomeState extends State<Home> {
               ),
               child: IconButton(
                 iconSize: ukuranIcon,
-                icon: Icon(Icons.library_books, color: Colors.orange[300]),
+                icon: Icon(
+                  Icons.library_books,
+                  color: Colors.orange[300],
+                ),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Data semua Token Listrik'),
+                  Navigator.push(
+                    context,
+                    ZoomAnimasi(
+                      page: AllTokenPage(),
                     ),
+                  ).then(
+                    (value) => setState(() {}),
                   );
                 },
               ),
@@ -140,7 +155,10 @@ class _HomeState extends State<Home> {
               ),
               child: IconButton(
                 iconSize: ukuranIcon,
-                icon: Icon(Icons.list_alt_rounded, color: Colors.purple[300]),
+                icon: Icon(
+                  Icons.list_alt_rounded,
+                  color: Colors.purple[300],
+                ),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

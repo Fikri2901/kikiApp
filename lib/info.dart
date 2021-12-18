@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/login.dart';
 import 'package:kikiapp/navbarButtom.dart';
 import 'package:kikiapp/page/home_page.dart';
+import 'package:kikiapp/page/token_page.dart';
 // import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -110,11 +110,12 @@ class _InfoState extends State<Info> {
                 iconSize: 50.0,
                 icon: Icon(Icons.library_books, color: Colors.orange[300]),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Data semua Token Listrik'),
+                  Navigator.push(
+                    context,
+                    ZoomAnimasi(
+                      page: TokenPage(),
                     ),
-                  );
+                  ).then((value) => setState(() {}));
                 },
               ),
             ),

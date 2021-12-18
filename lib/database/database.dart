@@ -1,4 +1,5 @@
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:kikiapp/models/token.dart';
 import 'package:kikiapp/models/user.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:kikiapp/models/jenis.dart';
@@ -6,7 +7,11 @@ import 'package:kikiapp/models/barang.dart';
 import '../utils/constants.dart';
 
 class MongoDatabase {
-  static var db, jenisCollection, barangCollection, userCollection;
+  static var db,
+      jenisCollection,
+      barangCollection,
+      userCollection,
+      tokenCollection;
 
   static connect() async {
     db = await Db.create(URL_KONEK_MONGODB);
@@ -14,6 +19,7 @@ class MongoDatabase {
     jenisCollection = db.collection(JENIS_COLLECTION);
     barangCollection = db.collection(BARANG_COLLECTION);
     userCollection = db.collection(USER_COLLECTION);
+    tokenCollection = db.collection(TOKEN_COLLECTION);
   }
 
   static Future<List<Map<String, dynamic>>> getDocumentJenis() async {
@@ -102,6 +108,35 @@ class MongoDatabase {
     if (delete != null) {
       await barangCollection.remove(where.id(barang.id));
     }
+  }
+
+  //================== TOKEN LISTRIK =================//
+
+  static Future<List<Map<String, dynamic>>> getTokenListrik() async {
+    try {
+      final token = await tokenCollection.find().toList();
+      return token;
+    } catch (e) {
+      print(e);
+      return Future.value(e);
+    }
+  }
+
+  static insertToken(Token token) async {
+    await tokenCollection.insertAll([token.toMap()]);
+  }
+
+  static updateToken(Token token) async {
+    var u = await tokenCollection.findOne({"_id": token.id});
+    u["nama"] = token.nama;
+    u["nomor"] = token.nomor;
+    u["tanggal_upload"] = u["tanggal_upload"];
+    u["tanggal_update"] = DateTime.now().toString();
+    await tokenCollection.save(u);
+  }
+
+  static deleteToken(Token token) async {
+    await tokenCollection.remove(where.id(token.id));
   }
 
   //================== LOGIN ========================//
