@@ -254,6 +254,7 @@ class _HomeState extends State<Home> {
         enableControlFinishLoad: true,
         controller: _refresh,
         header: DeliveryHeader(),
+        footer: MaterialFooter(),
         onRefresh: () async {
           await Future.delayed(
             Duration(seconds: 2),
@@ -263,6 +264,17 @@ class _HomeState extends State<Home> {
                 () {},
               );
               _refresh.resetLoadState();
+            },
+          );
+        },
+        onLoad: () async {
+          await Future.delayed(
+            Duration(seconds: 2),
+            () {
+              setState(
+                () {},
+              );
+              _refresh.finishLoad();
             },
           );
         },

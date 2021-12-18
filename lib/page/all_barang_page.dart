@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/component/barang_card_grid.dart';
@@ -28,6 +29,9 @@ class _AllBarangPageState extends State<AllBarangPage> {
     });
   }
 
+  int starIndex = 0;
+  int endIndex = 12;
+
   @override
   void initState() {
     super.initState();
@@ -40,7 +44,7 @@ class _AllBarangPageState extends State<AllBarangPage> {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
       ),
-      itemCount: _barang.length,
+      itemCount: _barang.length.clamp(starIndex, endIndex),
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
@@ -123,16 +127,32 @@ class _AllBarangPageState extends State<AllBarangPage> {
             enableControlFinishRefresh: false,
             enableControlFinishLoad: true,
             controller: _refresh,
-            header: DeliveryHeader(),
+            header: PhoenixHeader(),
+            footer: MaterialFooter(),
             onRefresh: () async {
               await Future.delayed(
                 Duration(seconds: 2),
                 () {
                   print('onRefresh');
                   setState(
-                    () {},
+                    () {
+                      endIndex = 12;
+                    },
                   );
                   _refresh.resetLoadState();
+                },
+              );
+            },
+            onLoad: () async {
+              await Future.delayed(
+                Duration(seconds: 2),
+                () {
+                  setState(
+                    () {
+                      endIndex += 10;
+                    },
+                  );
+                  _refresh.finishLoad();
                 },
               );
             },
@@ -160,6 +180,16 @@ class _AllBarangPageState extends State<AllBarangPage> {
   Future refreshBarang() async {
     await MongoDatabase.getBarangById(this.widget.idJenis);
     setState(() {});
+  }
+
+  Widget _loader(BuildContext context, String url) {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _error(BuildContext context, String url, dynamic error) {
+    return const Center(child: Icon(Icons.error));
   }
 
   showDetail(Barang barang) {
@@ -205,6 +235,15 @@ class _AllBarangPageState extends State<AllBarangPage> {
             ),
             SizedBox(
               height: 10.0,
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 8.0),
+              child: CachedNetworkImage(
+                imageUrl: barang.gambar,
+                placeholder: _loader,
+                errorWidget: _error,
+              ),
             ),
             Padding(
               padding:

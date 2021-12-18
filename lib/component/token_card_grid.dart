@@ -9,47 +9,18 @@ class TokenCardGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: detailToken,
-      child: Material(
-        borderRadius: BorderRadius.circular(15.0),
-        elevation: 5.0,
-        color: Colors.white,
-        child: Container(
-          child: Column(
-            children: [
-              Container(
-                width: 100.0,
-                height: 100.0,
-                child: Image.asset('assets/Dprofile.png'),
-              ),
-              Expanded(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only(top: 5.0, left: 3.0, right: 3.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        token.nama,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: Text(
-                          token.nomor,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.blue[400],
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+    return Material(
+      borderRadius: BorderRadius.circular(20.0),
+      elevation: 3.0,
+      color: Colors.white,
+      child: ListTile(
+        onTap: detailToken,
+        leading: Image.asset(
+          'assets/Dprofile.png',
+          width: 60,
         ),
+        title: Text(token.nama),
+        subtitle: Text('Token : ${token.nomor}'),
       ),
     );
   }

@@ -36,12 +36,15 @@ class _BarangPageState extends State<BarangPage> {
     getBarang();
   }
 
+  int startIndex = 0;
+  int endIndex = 12;
+
   Widget _barangList() {
     return new GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
       ),
-      itemCount: _barang.length,
+      itemCount: _barang.length.clamp(startIndex, endIndex),
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
@@ -125,16 +128,32 @@ class _BarangPageState extends State<BarangPage> {
             enableControlFinishRefresh: false,
             enableControlFinishLoad: true,
             controller: _refresh,
-            header: DeliveryHeader(),
+            header: PhoenixHeader(),
+            footer: MaterialFooter(),
             onRefresh: () async {
               await Future.delayed(
                 Duration(seconds: 2),
                 () {
                   print('onRefresh');
                   setState(
-                    () {},
+                    () {
+                      endIndex = 12;
+                    },
                   );
                   _refresh.resetLoadState();
+                },
+              );
+            },
+            onLoad: () async {
+              await Future.delayed(
+                Duration(seconds: 2),
+                () {
+                  setState(
+                    () {
+                      endIndex += 10;
+                    },
+                  );
+                  _refresh.finishLoad();
                 },
               );
             },

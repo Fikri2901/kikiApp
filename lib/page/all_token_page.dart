@@ -16,6 +16,10 @@ class AllTokenPage extends StatefulWidget {
 class _AllTokenPageState extends State<AllTokenPage> {
   List<Token> _searchResult = [];
   List<Token> _token = [];
+
+  int startIndex = 0;
+  int endIndex = 10;
+
   TextEditingController cariText = new TextEditingController();
   EasyRefreshController _refresh;
 
@@ -36,11 +40,8 @@ class _AllTokenPageState extends State<AllTokenPage> {
   }
 
   Widget _tokenList() {
-    return new GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-      ),
-      itemCount: _token.length,
+    return new ListView.builder(
+      itemCount: _token.length.clamp(startIndex, endIndex),
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
@@ -62,10 +63,7 @@ class _AllTokenPageState extends State<AllTokenPage> {
   }
 
   Widget _hasilCari() {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-      ),
+    return ListView.builder(
       itemCount: _searchResult.length,
       itemBuilder: (context, index) {
         return new Padding(
@@ -123,16 +121,32 @@ class _AllTokenPageState extends State<AllTokenPage> {
             enableControlFinishRefresh: false,
             enableControlFinishLoad: true,
             controller: _refresh,
-            header: DeliveryHeader(),
+            header: PhoenixHeader(),
+            footer: MaterialFooter(),
             onRefresh: () async {
               await Future.delayed(
                 Duration(seconds: 2),
                 () {
                   print('onRefresh');
                   setState(
-                    () {},
+                    () {
+                      endIndex = 10;
+                    },
                   );
                   _refresh.resetLoadState();
+                },
+              );
+            },
+            onLoad: () async {
+              await Future.delayed(
+                Duration(seconds: 2),
+                () {
+                  setState(
+                    () {
+                      endIndex += 10;
+                    },
+                  );
+                  _refresh.finishLoad();
                 },
               );
             },

@@ -131,7 +131,8 @@ class _JenisPageState extends State<JenisPage> {
             enableControlFinishRefresh: false,
             enableControlFinishLoad: true,
             controller: _refresh,
-            header: DeliveryHeader(),
+            header: PhoenixHeader(),
+            footer: MaterialFooter(),
             onRefresh: () async {
               await Future.delayed(
                 Duration(seconds: 2),
@@ -141,6 +142,17 @@ class _JenisPageState extends State<JenisPage> {
                     () {},
                   );
                   _refresh.resetLoadState();
+                },
+              );
+            },
+            onLoad: () async {
+              await Future.delayed(
+                Duration(seconds: 2),
+                () {
+                  setState(
+                    () {},
+                  );
+                  _refresh.finishLoad();
                 },
               );
             },
