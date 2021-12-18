@@ -41,26 +41,6 @@ class _AddJenisPageState extends State<AddJenisPage> {
     });
   }
 
-  // ignore: missing_return
-  Widget buildUploadStatus(UploadTask task) {
-    StreamBuilder<TaskSnapshot>(
-      stream: task.snapshotEvents,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final snap = snapshot.data;
-          final progress = snap.bytesTransferred / snap.totalBytes;
-          final persen = (progress * 100).toStringAsFixed(2);
-          return Text(
-            '$persen',
-            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-          );
-        } else {
-          return Container();
-        }
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final filename =
@@ -144,7 +124,9 @@ class _AddJenisPageState extends State<AddJenisPage> {
                       ),
                     ),
                   ),
-                  // task != null ? buildUploadStatus(task) : Container(),
+                  SizedBox(
+                    height: 20.0,
+                  ),
                 ],
               ),
             ),
@@ -166,15 +148,22 @@ class _AddJenisPageState extends State<AddJenisPage> {
                     onPressed: () {
                       if (jenis != null) {
                         setState(() {
-                          namaController.text.isEmpty
-                              ? _validasi = true
-                              : _validasi = updateJenis(jenis);
+                          if (namaController.text.isEmpty) {
+                            _validasi = true;
+                          } else if (file != null) {
+                            updateJenis(jenis);
+                            showProgress(task);
+                          } else {
+                            updateJenis(jenis);
+                          }
                         });
                       } else {
                         setState(() {
                           namaController.text.isEmpty
                               ? _validasi = true
-                              : _validasi = insertJenis();
+                              : insertJenis();
+
+                          showProgress(task);
                         });
                       }
                     },
@@ -205,6 +194,7 @@ class _AddJenisPageState extends State<AddJenisPage> {
 
     task = UploadImageFirebaseAPI.uploadFile(destination, file);
     setState(() {});
+
     if (task == null) return;
     final snapshoot = await task.whenComplete(() {});
     final urlDownload = await snapshoot.ref.getDownloadURL();
@@ -217,6 +207,7 @@ class _AddJenisPageState extends State<AddJenisPage> {
         tanggal_upload: DateTime.now().toString(),
         tanggal_update: DateTime.now().toString());
     await MongoDatabase.insertJenis(jenis);
+
     Navigator.pop(this.context);
 
     ScaffoldMessenger.of(this.context).showSnackBar(
@@ -224,6 +215,7 @@ class _AddJenisPageState extends State<AddJenisPage> {
         content: Text('${namaController.text} Berhasil ditambahkan !!'),
       ),
     );
+    Navigator.pop(this.context);
   }
 
   updateJenis(Jenis jenis) async {
@@ -234,6 +226,7 @@ class _AddJenisPageState extends State<AddJenisPage> {
         nama: namaController.text,
       );
       await MongoDatabase.updateJenis(j);
+      setState(() {});
       Navigator.pop(this.context);
 
       ScaffoldMessenger.of(this.context).showSnackBar(
@@ -241,11 +234,8 @@ class _AddJenisPageState extends State<AddJenisPage> {
           content: Text('${jenis.nama} Berhasil di update !!'),
         ),
       );
-    }
-
-    final fileName = basename(file.path);
-
-    if (fileName != null) {
+    } else {
+      final fileName = basename(file.path);
       FirebaseStorage.instance.refFromURL(jenis.gambar).delete();
 
       final destination = 'jenis/$fileName';
@@ -269,6 +259,40 @@ class _AddJenisPageState extends State<AddJenisPage> {
           content: Text('${jenis.nama} Berhasil di update !!'),
         ),
       );
+      Navigator.pop(this.context);
     }
+  }
+
+  showProgress(UploadTask task) {
+    AlertDialog alert = AlertDialog(
+      title: Text("Upload Data .... "),
+      content: StreamBuilder<TaskSnapshot>(
+        stream: task.snapshotEvents,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final snap = snapshot.data;
+            final progress = snap.bytesTransferred / snap.totalBytes;
+            final persen = (progress * 100).toStringAsFixed(2);
+
+            return Text(
+              '$persen %',
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            );
+          } else {
+            return Text(
+              '0.00 %',
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            );
+          }
+        },
+      ),
+    );
+
+    showDialog(
+      context: this.context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }

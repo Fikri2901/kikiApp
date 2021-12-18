@@ -253,7 +253,7 @@ class _HomeState extends State<Home> {
         enableControlFinishRefresh: false,
         enableControlFinishLoad: true,
         controller: _refresh,
-        header: DeliveryHeader(),
+        header: PhoenixHeader(),
         footer: MaterialFooter(),
         onRefresh: () async {
           await Future.delayed(

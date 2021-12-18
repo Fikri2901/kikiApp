@@ -222,6 +222,9 @@ class _AddBarangPageState extends State<AddBarangPage> {
                               ecerController.text.isEmpty ||
                               grosirController.text.isEmpty) {
                             _validasi = true;
+                          } else if (file != null) {
+                            updateBarang(barang);
+                            showProgress(task);
                           } else {
                             updateBarang(barang);
                           }
@@ -235,6 +238,8 @@ class _AddBarangPageState extends State<AddBarangPage> {
                           } else {
                             insertBarang();
                           }
+
+                          showProgress(task);
                         });
                       }
                     },
@@ -299,6 +304,8 @@ class _AddBarangPageState extends State<AddBarangPage> {
     final aTambah = SnackBar(
         content: Text('${namaController.text} Berhasil di Tambahkan !!'));
     ScaffoldMessenger.of(this.context).showSnackBar(aTambah);
+
+    Navigator.pop(this.context);
   }
 
   updateBarang(Barang barang) async {
@@ -319,11 +326,9 @@ class _AddBarangPageState extends State<AddBarangPage> {
           content: Text('${barang.nama} Berhasil di update !!'),
         ),
       );
-    }
+    } else {
+      final fileName = basename(file.path);
 
-    final fileName = basename(file.path);
-
-    if (fileName != null) {
       FirebaseStorage.instance.refFromURL(barang.gambar).delete();
       final destination = 'barang/$fileName';
 
@@ -349,6 +354,40 @@ class _AddBarangPageState extends State<AddBarangPage> {
       final aTambah = SnackBar(
           content: Text('${namaController.text} Berhasil di Update !!'));
       ScaffoldMessenger.of(this.context).showSnackBar(aTambah);
+      Navigator.pop(this.context);
     }
+  }
+
+  showProgress(UploadTask task) {
+    AlertDialog alert = AlertDialog(
+      title: Text("Upload Data .... "),
+      content: StreamBuilder<TaskSnapshot>(
+        stream: task.snapshotEvents,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final snap = snapshot.data;
+            final progress = snap.bytesTransferred / snap.totalBytes;
+            final persen = (progress * 100).toStringAsFixed(2);
+
+            return Text(
+              '$persen %',
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            );
+          } else {
+            return Text(
+              '0.00 %',
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            );
+          }
+        },
+      ),
+    );
+
+    showDialog(
+      context: this.context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
