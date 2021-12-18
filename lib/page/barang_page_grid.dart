@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/component/barang_card_grid.dart';
@@ -180,6 +181,16 @@ class _BarangPageState extends State<BarangPage> {
     );
   }
 
+  Widget _loader(BuildContext context, String url) {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _error(BuildContext context, String url, dynamic error) {
+    return const Center(child: Icon(Icons.error));
+  }
+
   showDetail(Barang barang) {
     Widget cancelButton = TextButton(
       child: Text("Tutup"),
@@ -223,6 +234,15 @@ class _BarangPageState extends State<BarangPage> {
             ),
             SizedBox(
               height: 10.0,
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 8.0),
+              child: CachedNetworkImage(
+                imageUrl: barang.gambar,
+                placeholder: _loader,
+                errorWidget: _error,
+              ),
             ),
             Padding(
               padding:
