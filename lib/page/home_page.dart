@@ -234,44 +234,41 @@ class _HomepageState extends State<Homepage> {
                                     .contains(searchString)
                                 ? Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Hero(
-                                      tag: 'list',
-                                      child: JenisCard(
-                                        jenis:
-                                            Jenis.fromMap(snapshot.data[index]),
-                                        onLongDelete: () {
-                                          showAlertHapus(Jenis.fromMap(
-                                              snapshot.data[index]));
-                                        },
-                                        onTapEdit: () async {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (BuildContext context) {
-                                                return AddJenisPage();
-                                              },
-                                              settings: RouteSettings(
-                                                arguments: Jenis.fromMap(
-                                                    snapshot.data[index]),
-                                              ),
+                                    child: JenisCard(
+                                      jenis:
+                                          Jenis.fromMap(snapshot.data[index]),
+                                      onLongDelete: () {
+                                        showAlertHapus(Jenis.fromMap(
+                                            snapshot.data[index]));
+                                      },
+                                      onTapEdit: () async {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (BuildContext context) {
+                                              return AddJenisPage();
+                                            },
+                                            settings: RouteSettings(
+                                              arguments: Jenis.fromMap(
+                                                  snapshot.data[index]),
                                             ),
-                                          ).then((value) => setState(() {}));
-                                        },
-                                        onTapListBarang: () async {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (BuildContext context) {
-                                                return BarangPage();
-                                              },
-                                              settings: RouteSettings(
-                                                arguments: Jenis.fromMap(
-                                                    snapshot.data[index]),
-                                              ),
+                                          ),
+                                        ).then((value) => setState(() {}));
+                                      },
+                                      onTapListBarang: () async {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (BuildContext context) {
+                                              return BarangPage();
+                                            },
+                                            settings: RouteSettings(
+                                              arguments: Jenis.fromMap(
+                                                  snapshot.data[index]),
                                             ),
-                                          ).then((value) => setState(() {}));
-                                        },
-                                      ),
+                                          ),
+                                        ).then((value) => setState(() {}));
+                                      },
                                     ),
                                   )
                                 : Container();

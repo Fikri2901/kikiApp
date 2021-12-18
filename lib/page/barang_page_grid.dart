@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/component/barang_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/barang.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+// import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class BarangPage extends StatefulWidget {
   final String idJenis, namaJenis;
@@ -18,20 +19,7 @@ class _BarangPageState extends State<BarangPage> {
   List<Barang> _searchResult = [];
   List<Barang> _barang = [];
   TextEditingController cariText = new TextEditingController();
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
-
-  void onRefresh() async {
-    await Future.delayed(Duration(milliseconds: 1000));
-    _refreshController.refreshCompleted();
-  }
-
-  void onLoading() async {
-    await Future.delayed(Duration(milliseconds: 1000));
-    getBarang();
-    if (mounted) setState(() {});
-    _refreshController.refreshCompleted();
-  }
+  EasyRefreshController _refresh;
 
   Future<Null> getBarang() async {
     print(this.widget.idJenis);
@@ -46,7 +34,7 @@ class _BarangPageState extends State<BarangPage> {
   @override
   void initState() {
     super.initState();
-
+    _refresh = EasyRefreshController();
     getBarang();
   }
 
@@ -59,20 +47,17 @@ class _BarangPageState extends State<BarangPage> {
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Hero(
-            tag: 'list',
-            child: BarangCardGrid(
-              barang: Barang.fromMap(
-                _barang[index].toMap(),
-              ),
-              detailBarang: () {
-                showDetail(
-                  Barang.fromMap(
-                    _barang[index].toMap(),
-                  ),
-                );
-              },
+          child: BarangCardGrid(
+            barang: Barang.fromMap(
+              _barang[index].toMap(),
             ),
+            detailBarang: () {
+              showDetail(
+                Barang.fromMap(
+                  _barang[index].toMap(),
+                ),
+              );
+            },
           ),
         );
       },
@@ -88,20 +73,17 @@ class _BarangPageState extends State<BarangPage> {
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Hero(
-            tag: 'list',
-            child: BarangCardGrid(
-              barang: Barang.fromMap(
-                _searchResult[index].toMap(),
-              ),
-              detailBarang: () {
-                showDetail(
-                  Barang.fromMap(
-                    _searchResult[index].toMap(),
-                  ),
-                );
-              },
+          child: BarangCardGrid(
+            barang: Barang.fromMap(
+              _searchResult[index].toMap(),
             ),
+            detailBarang: () {
+              showDetail(
+                Barang.fromMap(
+                  _searchResult[index].toMap(),
+                ),
+              );
+            },
           ),
         );
       },
@@ -141,40 +123,29 @@ class _BarangPageState extends State<BarangPage> {
           child: _searchBox(),
         ),
         Expanded(
-          child: SmartRefresher(
-              enablePullDown: true,
-              // enablePullUp: true,
-              controller: _refreshController,
-              onRefresh: onRefresh,
-              onLoading: onLoading,
-              physics: BouncingScrollPhysics(),
-              header: WaterDropMaterialHeader(),
-              footer: CustomFooter(
-                builder: (BuildContext context, LoadStatus mode) {
-                  Widget body;
-                  if (mode == LoadStatus.idle) {
-                    body = Text("Pull up load");
-                  } else if (mode == LoadStatus.loading) {
-                    body = CupertinoActivityIndicator();
-                  } else if (mode == LoadStatus.failed) {
-                    body = Text("Load Failed! Click retry");
-                  } else if (mode == LoadStatus.canLoading) {
-                    body = Text("release to load more");
-                  } else {
-                    body = Text("No More Data");
-                  }
-                  return Container(
-                    height: 55.0,
-                    child: Center(
-                      child: body,
-                    ),
+          child: EasyRefresh(
+            enableControlFinishRefresh: false,
+            enableControlFinishLoad: true,
+            controller: _refresh,
+            header: DeliveryHeader(),
+            onRefresh: () async {
+              await Future.delayed(
+                Duration(seconds: 2),
+                () {
+                  print('onRefresh');
+                  setState(
+                    () {},
                   );
+                  _refresh.resetLoadState();
                 },
-              ),
-              child: _searchResult.length != 0 || cariText.text.isNotEmpty
-                  ? _hasilCari()
-                  : _barangList()),
+              );
+            },
+            child: _searchResult.length != 0 || cariText.text.isNotEmpty
+                ? _hasilCari()
+                : _barangList(),
+          ),
         ),
+        // ),
       ],
     );
   }

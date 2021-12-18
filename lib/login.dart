@@ -36,8 +36,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Stack(children: [
         SingleChildScrollView(
           child: Form(
-            // ignore: deprecated_member_use
-            autovalidate: true,
+            autovalidateMode: AutovalidateMode.always,
             child: Column(
               children: [
                 Center(

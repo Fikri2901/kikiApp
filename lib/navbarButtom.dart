@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kikiapp/home.dart';
 import 'package:kikiapp/info.dart';
 import 'package:kikiapp/page/jenis_page_grid.dart';
+import 'package:sliding_clipped_nav_bar/sliding_clipped_nav_bar.dart';
 
 class NavbarButtom extends StatefulWidget {
   @override
@@ -9,46 +10,64 @@ class NavbarButtom extends StatefulWidget {
 }
 
 class _NavbarButtomState extends State<NavbarButtom> {
-  int _selectedTabIndex = 0;
+  PageController _pageController;
+  int selectedIndex = 0;
 
-  void _onNavBarTapped(int index) {
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: selectedIndex);
+  }
+
+  void onButtonPressed(int index) {
     setState(() {
-      _selectedTabIndex = index;
+      selectedIndex = index;
     });
+    _pageController.jumpToPage(selectedIndex);
   }
 
   @override
   Widget build(BuildContext context) {
-    final _listPage = <Widget>[Home(), JenisPage(), Info()];
-
-    final _navbarItem = <BottomNavigationBarItem>[
-      BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'Home',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.inventory),
-        label: 'Barang',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.info),
-        label: 'Info',
-      ),
-    ];
-
-    final _buttonNavbar = BottomNavigationBar(
-      items: _navbarItem,
-      currentIndex: _selectedTabIndex,
-      selectedItemColor: Colors.red[700],
-      unselectedItemColor: Colors.blueGrey,
-      onTap: _onNavBarTapped,
-    );
-
     return Scaffold(
-      body: Center(
-        child: _listPage[_selectedTabIndex],
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: _pageController,
+              children: _listOfWidget,
+            ),
+          ),
+        ],
       ),
-      bottomNavigationBar: _buttonNavbar,
+      bottomNavigationBar: SlidingClippedNavBar.colorful(
+        backgroundColor: Colors.white,
+        onButtonPressed: onButtonPressed,
+        iconSize: 30,
+        selectedIndex: selectedIndex,
+        barItems: <BarItem>[
+          BarItem(
+            icon: Icons.home,
+            title: 'Home',
+            activeColor: Colors.blue[400],
+            inactiveColor: Colors.red[400],
+          ),
+          BarItem(
+            icon: Icons.inventory,
+            title: 'Barang',
+            activeColor: Colors.orange[400],
+            inactiveColor: Colors.red[400],
+          ),
+          BarItem(
+            icon: Icons.info_outline_rounded,
+            title: 'Info',
+            activeColor: Colors.green[400],
+            inactiveColor: Colors.red[400],
+          ),
+        ],
+      ),
     );
   }
 }
+
+List<Widget> _listOfWidget = <Widget>[Home(), JenisPage(), Info()];

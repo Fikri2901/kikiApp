@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/page/all_barang_page.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -12,26 +11,14 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  EasyRefreshController _refresh;
   int _current = 0;
   final CarouselController _controller = CarouselController();
 
   @override
   void initState() {
     super.initState();
-  }
-
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
-
-  void onRefresh() async {
-    await Future.delayed(Duration(milliseconds: 1000));
-    _refreshController.refreshCompleted();
-  }
-
-  void onLoading() async {
-    await Future.delayed(Duration(milliseconds: 1000));
-    if (mounted) setState(() {});
-    _refreshController.refreshCompleted();
+    _refresh = EasyRefreshController();
   }
 
   final double ukuranFont = 18.0;
@@ -186,95 +173,92 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Widget tampilan() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          CarouselSlider(
+            options: CarouselOptions(
+              autoPlay: true,
+              aspectRatio: 2.0,
+              enlargeCenterPage: true,
+              onPageChanged: (index, reason) {
+                setState(() {
+                  _current = index;
+                });
+              },
+            ),
+            items: imageSliders,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: imgList.asMap().entries.map((entry) {
+              return GestureDetector(
+                onTap: () => _controller.animateToPage(entry.key),
+                child: Container(
+                  width: 12.0,
+                  height: 12.0,
+                  margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: (Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black)
+                          .withOpacity(_current == entry.key ? 0.9 : 0.4)),
+                ),
+              );
+            }).toList(),
+          ),
+          Container(
+            margin: const EdgeInsets.only(right: 10.0, left: 10.0),
+            height: 370.0,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: menuIcon(),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Kiki Cell'),
-        centerTitle: true,
-        actions: <Widget>[],
-      ),
-      body: SmartRefresher(
-        enablePullDown: true,
-        // enablePullUp: true,
-        controller: _refreshController,
-        onRefresh: onRefresh,
-        onLoading: onLoading,
-        physics: BouncingScrollPhysics(),
-        header: WaterDropMaterialHeader(),
-        footer: CustomFooter(
-          builder: (BuildContext context, LoadStatus mode) {
-            Widget body;
-            if (mode == LoadStatus.idle) {
-              body = Text("Pull up load");
-            } else if (mode == LoadStatus.loading) {
-              body = CupertinoActivityIndicator();
-            } else if (mode == LoadStatus.failed) {
-              body = Text("Load Failed! Click retry");
-            } else if (mode == LoadStatus.canLoading) {
-              body = Text("release to load more");
-            } else {
-              body = Text("No More Data");
-            }
-            return Container(
-              height: 55.0,
-              child: Center(
-                child: body,
-              ),
+        appBar: AppBar(
+          title: Text('Kiki Cell'),
+          centerTitle: true,
+          actions: <Widget>[],
+        ),
+        body: EasyRefresh.custom(
+          enableControlFinishRefresh: false,
+          enableControlFinishLoad: true,
+          controller: _refresh,
+          header: DeliveryHeader(),
+          onRefresh: () async {
+            await Future.delayed(
+              Duration(seconds: 2),
+              () {
+                print('onRefresh');
+                setState(
+                  () {},
+                );
+                _refresh.resetLoadState();
+              },
             );
           },
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              CarouselSlider(
-                options: CarouselOptions(
-                  autoPlay: true,
-                  aspectRatio: 2.0,
-                  enlargeCenterPage: true,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _current = index;
-                    });
-                  },
-                ),
-                items: imageSliders,
+          slivers: <Widget>[
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return tampilan();
+                },
+                childCount: 1,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: imgList.asMap().entries.map((entry) {
-                  return GestureDetector(
-                    onTap: () => _controller.animateToPage(entry.key),
-                    child: Container(
-                      width: 12.0,
-                      height: 12.0,
-                      margin:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: (Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black)
-                              .withOpacity(_current == entry.key ? 0.9 : 0.4)),
-                    ),
-                  );
-                }).toList(),
-              ),
-              Container(
-                margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-                height: 370.0,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: menuIcon(),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          ],
+        ));
   }
 }
 

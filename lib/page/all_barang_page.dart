@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/component/barang_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/barang.dart';
@@ -16,8 +17,8 @@ class _AllBarangPageState extends State<AllBarangPage> {
   List<Barang> _searchResult = [];
   List<Barang> _barang = [];
   TextEditingController cariText = new TextEditingController();
+  EasyRefreshController _refresh;
 
-  // Get json result and convert it to model. Then add
   Future<Null> getBarang() async {
     final resp = await MongoDatabase.getBarang();
     setState(() {
@@ -30,7 +31,7 @@ class _AllBarangPageState extends State<AllBarangPage> {
   @override
   void initState() {
     super.initState();
-
+    _refresh = EasyRefreshController();
     getBarang();
   }
 
@@ -118,11 +119,27 @@ class _AllBarangPageState extends State<AllBarangPage> {
           child: _searchBox(),
         ),
         Expanded(
-          child: new RefreshIndicator(
-              onRefresh: refreshBarang,
-              child: _searchResult.length != 0 || cariText.text.isNotEmpty
-                  ? _hasilCari()
-                  : _barangList()),
+          child: EasyRefresh(
+            enableControlFinishRefresh: false,
+            enableControlFinishLoad: true,
+            controller: _refresh,
+            header: DeliveryHeader(),
+            onRefresh: () async {
+              await Future.delayed(
+                Duration(seconds: 2),
+                () {
+                  print('onRefresh');
+                  setState(
+                    () {},
+                  );
+                  _refresh.resetLoadState();
+                },
+              );
+            },
+            child: _searchResult.length != 0 || cariText.text.isNotEmpty
+                ? _hasilCari()
+                : _barangList(),
+          ),
         ),
       ],
     );

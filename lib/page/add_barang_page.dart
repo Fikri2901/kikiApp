@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/database/uploadFirebase.dart';
 import 'package:kikiapp/models/barang.dart';
@@ -88,8 +87,7 @@ class _AddBarangPageState extends State<AddBarangPage> {
         children: [
           SingleChildScrollView(
             child: Form(
-              // ignore: deprecated_member_use
-              autovalidate: true,
+              autovalidateMode: AutovalidateMode.always,
               child: Column(
                 children: [
                   namaGambar != null
