@@ -2,6 +2,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kikiapp/models/bayar.dart';
 import 'package:kikiapp/models/token.dart';
 import 'package:kikiapp/models/user.dart';
+import 'package:kikiapp/models/userHutang.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:kikiapp/models/jenis.dart';
 import 'package:kikiapp/models/barang.dart';
@@ -12,6 +13,8 @@ class MongoDatabase {
       jenisCollection,
       barangCollection,
       userCollection,
+      userHutangCollection,
+      hutangCollection,
       tokenCollection,
       bayarCollection;
 
@@ -23,6 +26,8 @@ class MongoDatabase {
     userCollection = db.collection(USER_COLLECTION);
     tokenCollection = db.collection(TOKEN_COLLECTION);
     bayarCollection = db.collection(BAYAR_COLLECTION);
+    userHutangCollection = db.collection(USERHUTANG_COLLECTION);
+    hutangCollection = db.collection(HUTANG_COLLECTION);
   }
 
   static Future<List<Map<String, dynamic>>> getDocumentJenis() async {
@@ -170,6 +175,63 @@ class MongoDatabase {
   static deleteBayar(Bayar bayar) async {
     await bayarCollection.remove(where.id(bayar.id));
   }
+
+  //================== USER HUTANG =================//
+
+  static Future<List<Map<String, dynamic>>> getUserHutang() async {
+    try {
+      final userH = await userHutangCollection.find().toList();
+      return userH;
+    } catch (e) {
+      print(e);
+      return Future.value(e);
+    }
+  }
+
+  static insertUserHutang(UserHutang userH) async {
+    await userHutangCollection.insertAll([userH.toMap()]);
+  }
+
+  static updateUserHutang(UserHutang userH) async {
+    var u = await userHutangCollection.findOne({"_id": userH.id});
+    u["nama"] = userH.nama;
+    u["tanggal_upload"] = u["tanggal_upload"];
+    u["tanggal_update"] = DateTime.now().toString();
+    await userHutangCollection.save(u);
+  }
+
+  static deleteUserHutang(UserHutang userH) async {
+    await userHutangCollection.remove(where.id(userH.id));
+  }
+
+  //================== HUTANG =================//
+
+  // static Future<List<Map<String, dynamic>>> getBayarListrik() async {
+  //   try {
+  //     final bayar = await bayarCollection.find().toList();
+  //     return bayar;
+  //   } catch (e) {
+  //     print(e);
+  //     return Future.value(e);
+  //   }
+  // }
+
+  // static insertBayar(Bayar bayar) async {
+  //   await bayarCollection.insertAll([bayar.toMap()]);
+  // }
+
+  // static updateBayar(Bayar bayar) async {
+  //   var u = await bayarCollection.findOne({"_id": bayar.id});
+  //   u["nama"] = bayar.nama;
+  //   u["nomor"] = bayar.nomor;
+  //   u["tanggal_upload"] = u["tanggal_upload"];
+  //   u["tanggal_update"] = DateTime.now().toString();
+  //   await bayarCollection.save(u);
+  // }
+
+  // static deleteBayar(Bayar bayar) async {
+  //   await bayarCollection.remove(where.id(bayar.id));
+  // }
 
   //================== LOGIN ========================//
 

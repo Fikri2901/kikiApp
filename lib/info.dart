@@ -5,6 +5,7 @@ import 'package:kikiapp/navbarButtom.dart';
 import 'package:kikiapp/page/bayar_page.dart';
 import 'package:kikiapp/page/home_page.dart';
 import 'package:kikiapp/page/token_page.dart';
+import 'package:kikiapp/page/userHutang_page.dart';
 // import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -78,11 +79,12 @@ class _InfoState extends State<Info> {
                 iconSize: 50.0,
                 icon: Icon(Icons.book_rounded, color: Colors.lightGreen),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Data semua Hutang'),
+                  Navigator.push(
+                    context,
+                    ZoomAnimasi(
+                      page: UserHutangPage(),
                     ),
-                  );
+                  ).then((value) => setState(() {}));
                 },
               ),
             ),

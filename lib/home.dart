@@ -4,6 +4,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/page/all_barang_page.dart';
 import 'package:kikiapp/page/all_bayar_page.dart';
 import 'package:kikiapp/page/all_token_page.dart';
+import 'package:kikiapp/page/all_userHUtang_page.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -89,14 +90,14 @@ class _HomeState extends State<Home> {
                     Icons.menu_book_rounded,
                   ),
                   onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   ZoomAnimasi(
-                    //     page: AllBarangPage(),
-                    //   ),
-                    // ).then(
-                    //   (value) => setState(() {}),
-                    // );
+                    Navigator.push(
+                      context,
+                      ZoomAnimasi(
+                        page: AllUserHutangPage(),
+                      ),
+                    ).then(
+                      (value) => setState(() {}),
+                    );
                   },
                 ),
               ),
