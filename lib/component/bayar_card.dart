@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:kikiapp/models/token.dart';
+import 'package:kikiapp/models/bayar.dart';
 
-class TokenCard extends StatelessWidget {
-  const TokenCard(
-      {this.token, this.onPress, this.onLongDelete, this.onTapEdit});
+class BayarCard extends StatelessWidget {
+  const BayarCard(
+      {this.bayar, this.onPress, this.onLongDelete, this.onTapEdit});
 
-  final Token token;
+  final Bayar bayar;
   final Function onLongDelete, onTapEdit, onPress;
 
   @override
@@ -20,8 +20,8 @@ class TokenCard extends StatelessWidget {
           'assets/Dprofile.png',
           width: 60,
         ),
-        title: Text(token.nama),
-        subtitle: Text('Nomor : ${token.nomor}'),
+        title: Text(bayar.nama),
+        subtitle: Text('Nomor : ${bayar.nomor}'),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

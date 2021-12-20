@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:kikiapp/database/database.dart';
-import 'package:kikiapp/models/token.dart';
+import 'package:kikiapp/models/bayar.dart';
 import 'package:mongo_dart/mongo_dart.dart' as M;
 
 // ignore: must_be_immutable
-class AddTokenPage extends StatefulWidget {
+class AddBayarPage extends StatefulWidget {
   @override
-  _AddTokenPageState createState() => _AddTokenPageState();
+  _AddBayarPageState createState() => _AddBayarPageState();
 }
 
-class _AddTokenPageState extends State<AddTokenPage> {
+class _AddBayarPageState extends State<AddBayarPage> {
   TextEditingController namaController = TextEditingController();
   TextEditingController nomorController = TextEditingController();
   // ignore: unused_field
@@ -24,12 +24,12 @@ class _AddTokenPageState extends State<AddTokenPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Token token = ModalRoute.of(context).settings.arguments;
-    var widgetText = 'Tambah Data Token Listrik';
-    if (token != null) {
-      namaController.text = token.nama;
-      nomorController.text = token.nomor;
-      widgetText = 'Update ${token.nama}';
+    final Bayar bayar = ModalRoute.of(context).settings.arguments;
+    var widgetText = 'Tambah Data Bayar Listrik';
+    if (bayar != null) {
+      namaController.text = bayar.nama;
+      nomorController.text = bayar.nomor;
+      widgetText = 'Update ${bayar.nama}';
     }
     return Scaffold(
       appBar: new PreferredSize(
@@ -72,7 +72,7 @@ class _AddTokenPageState extends State<AddTokenPage> {
                       controller: nomorController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: 'Nomor Token',
+                        labelText: 'Nomor Pembayaran Listrik',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                             Radius.circular(10.0),
@@ -100,13 +100,13 @@ class _AddTokenPageState extends State<AddTokenPage> {
                       style: TextStyle(fontSize: 18.0),
                     ),
                     onPressed: () {
-                      if (token != null) {
+                      if (bayar != null) {
                         setState(() {
                           if (namaController.text.isEmpty ||
                               nomorController.text.isEmpty) {
                             _validasi = true;
                           } else {
-                            updateToken(token);
+                            updateBayar(bayar);
                           }
                         });
                       } else {
@@ -115,7 +115,7 @@ class _AddTokenPageState extends State<AddTokenPage> {
                               nomorController.text.isEmpty) {
                             _validasi = true;
                           } else {
-                            insertToken();
+                            insertBayar();
                           }
                         });
                       }
@@ -144,15 +144,15 @@ class _AddTokenPageState extends State<AddTokenPage> {
       return null;
   }
 
-  insertToken() async {
-    final token = Token(
+  insertBayar() async {
+    final bayar = Bayar(
       id: M.ObjectId(),
       nama: namaController.text,
       nomor: nomorController.text,
       tanggal_upload: DateTime.now().toString(),
       tanggal_update: DateTime.now().toString(),
     );
-    await MongoDatabase.insertToken(token);
+    await MongoDatabase.insertBayar(bayar);
     Navigator.pop(this.context);
 
     ScaffoldMessenger.of(this.context).showSnackBar(
@@ -162,18 +162,18 @@ class _AddTokenPageState extends State<AddTokenPage> {
     );
   }
 
-  updateToken(Token token) async {
-    final t = Token(
-      id: token.id,
+  updateBayar(Bayar bayar) async {
+    final b = Bayar(
+      id: bayar.id,
       nama: namaController.text,
       nomor: nomorController.text,
     );
-    await MongoDatabase.updateToken(t);
+    await MongoDatabase.updateBayar(b);
     Navigator.pop(this.context);
 
     ScaffoldMessenger.of(this.context).showSnackBar(
       SnackBar(
-        content: Text('${token.nama} Berhasil di update !!'),
+        content: Text('${bayar.nama} Berhasil di update !!'),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/page/all_barang_page.dart';
+import 'package:kikiapp/page/all_bayar_page.dart';
 import 'package:kikiapp/page/all_token_page.dart';
 
 class Home extends StatefulWidget {
@@ -23,7 +24,8 @@ class _HomeState extends State<Home> {
   }
 
   final double ukuranFont = 18.0;
-  final double ukuranIcon = 100.0;
+  final double ukuranIcon = 70.0;
+  final Color shadowColor = Colors.red;
 
   Widget menuIcon() {
     return GridView.count(
@@ -32,160 +34,169 @@ class _HomeState extends State<Home> {
       padding: const EdgeInsets.only(top: 20.0),
       crossAxisCount: 2,
       children: <Widget>[
-        Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
+        GridTile(
+          child: Column(
+            children: [
+              Material(
+                shadowColor: shadowColor,
+                borderRadius: BorderRadius.circular(20.0),
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: IconButton(
-                iconSize: ukuranIcon,
-                icon: Icon(
-                  Icons.inventory,
-                  color: Colors.blue[300],
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    ZoomAnimasi(
-                      page: AllBarangPage(),
-                    ),
-                  ).then(
-                    (value) => setState(() {}),
-                  );
-                },
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Text(
-                  'Barang',
-                  style: TextStyle(
-                    fontSize: ukuranFont,
-                    fontWeight: FontWeight.bold,
+                child: IconButton(
+                  iconSize: ukuranIcon,
+                  color: Colors.blue[400],
+                  icon: Icon(
+                    Icons.inventory,
                   ),
-                ),
-              ),
-            )
-          ],
-        ),
-        Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: IconButton(
-                iconSize: ukuranIcon,
-                icon: Icon(
-                  Icons.book_rounded,
-                  color: Colors.lightGreen,
-                ),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Data semua Hutang'),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Text(
-                  'Hutang',
-                  style: TextStyle(
-                    fontSize: ukuranFont,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-        Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: IconButton(
-                iconSize: ukuranIcon,
-                icon: Icon(
-                  Icons.library_books,
-                  color: Colors.orange[300],
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    ZoomAnimasi(
-                      page: AllTokenPage(),
-                    ),
-                  ).then(
-                    (value) => setState(() {}),
-                  );
-                },
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Text(
-                  'Token Listrik',
-                  style: TextStyle(
-                    fontSize: ukuranFont,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-        Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: IconButton(
-                iconSize: ukuranIcon,
-                icon: Icon(
-                  Icons.list_alt_rounded,
-                  color: Colors.purple[300],
-                ),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Data semua Bayar Listrik',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      ZoomAnimasi(
+                        page: AllBarangPage(),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Text(
-                  'Bayar Listrik',
-                  style: TextStyle(
-                    fontSize: ukuranFont,
-                    fontWeight: FontWeight.bold,
-                  ),
+                    ).then(
+                      (value) => setState(() {}),
+                    );
+                  },
                 ),
               ),
-            )
-          ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Text(
+                    'Semua Barang',
+                    style: TextStyle(
+                      fontSize: ukuranFont,
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        GridTile(
+          child: Column(
+            children: [
+              Material(
+                shadowColor: shadowColor,
+                borderRadius: BorderRadius.circular(20.0),
+                color: Colors.white,
+                child: IconButton(
+                  iconSize: ukuranIcon,
+                  color: Colors.lightGreen,
+                  icon: Icon(
+                    Icons.menu_book_rounded,
+                  ),
+                  onPressed: () {
+                    // Navigator.push(
+                    //   context,
+                    //   ZoomAnimasi(
+                    //     page: AllBarangPage(),
+                    //   ),
+                    // ).then(
+                    //   (value) => setState(() {}),
+                    // );
+                  },
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Text(
+                    'Buku Hutang',
+                    style: TextStyle(
+                      fontSize: ukuranFont,
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        GridTile(
+          child: Column(
+            children: [
+              Material(
+                shadowColor: shadowColor,
+                borderRadius: BorderRadius.circular(20.0),
+                color: Colors.white,
+                child: IconButton(
+                  iconSize: ukuranIcon,
+                  color: Colors.orange[300],
+                  icon: Icon(
+                    Icons.library_books,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      ZoomAnimasi(
+                        page: AllTokenPage(),
+                      ),
+                    ).then(
+                      (value) => setState(() {}),
+                    );
+                  },
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Text(
+                    'List Token Listrik',
+                    style: TextStyle(
+                      fontSize: ukuranFont,
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        GridTile(
+          child: Column(
+            children: [
+              Material(
+                shadowColor: shadowColor,
+                borderRadius: BorderRadius.circular(20.0),
+                color: Colors.white,
+                child: IconButton(
+                  iconSize: ukuranIcon,
+                  color: Colors.purple[300],
+                  icon: Icon(
+                    Icons.list_alt_rounded,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      ZoomAnimasi(
+                        page: AllBayarPage(),
+                      ),
+                    ).then(
+                      (value) => setState(() {}),
+                    );
+                  },
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Text(
+                    'List Bayar Listrik',
+                    style: TextStyle(
+                      fontSize: ukuranFont,
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ],
     );
@@ -193,50 +204,54 @@ class _HomeState extends State<Home> {
 
   Widget tampilan() {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          CarouselSlider(
-            options: CarouselOptions(
-              autoPlay: true,
-              aspectRatio: 2.0,
-              enlargeCenterPage: true,
-              onPageChanged: (index, reason) {
-                setState(() {
-                  _current = index;
-                });
-              },
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10.0),
+        child: Column(
+          children: [
+            CarouselSlider(
+              options: CarouselOptions(
+                autoPlay: true,
+                aspectRatio: 2.0,
+                enlargeCenterPage: true,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    _current = index;
+                  });
+                },
+              ),
+              items: imageSliders,
             ),
-            items: imageSliders,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: imgList.asMap().entries.map((entry) {
-              return GestureDetector(
-                onTap: () => _controller.animateToPage(entry.key),
-                child: Container(
-                  width: 12.0,
-                  height: 12.0,
-                  margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: (Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black)
-                          .withOpacity(_current == entry.key ? 0.9 : 0.4)),
-                ),
-              );
-            }).toList(),
-          ),
-          Container(
-            margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-            height: 370.0,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: imgList.asMap().entries.map((entry) {
+                return GestureDetector(
+                  onTap: () => _controller.animateToPage(entry.key),
+                  child: Container(
+                    width: 12.0,
+                    height: 12.0,
+                    margin:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: (Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black)
+                            .withOpacity(_current == entry.key ? 0.9 : 0.4)),
+                  ),
+                );
+              }).toList(),
             ),
-            child: menuIcon(),
-          )
-        ],
+            Container(
+              margin: const EdgeInsets.only(right: 10.0, left: 10.0),
+              height: 370.0,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: menuIcon(),
+            )
+          ],
+        ),
       ),
     );
   }

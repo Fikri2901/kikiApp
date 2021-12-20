@@ -1,21 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:kikiapp/component/token_card_grid.dart';
+import 'package:kikiapp/component/bayar_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
-import 'package:kikiapp/models/token.dart';
+import 'package:kikiapp/models/bayar.dart';
 
-class AllTokenPage extends StatefulWidget {
-  final String idJenis, namaJenis;
-  AllTokenPage({Key key, this.idJenis, this.namaJenis}) : super(key: key);
+class AllBayarPage extends StatefulWidget {
+  AllBayarPage({Key key}) : super(key: key);
 
   @override
-  _AllTokenPageState createState() => new _AllTokenPageState();
+  _AllBayarPageState createState() => new _AllBayarPageState();
 }
 
-class _AllTokenPageState extends State<AllTokenPage> {
-  List<Token> _searchResult = [];
-  List<Token> _token = [];
+class _AllBayarPageState extends State<AllBayarPage> {
+  List<Bayar> _searchResult = [];
+  List<Bayar> _bayar = [];
 
   int startIndex = 0;
   int endIndex = 10;
@@ -23,11 +22,11 @@ class _AllTokenPageState extends State<AllTokenPage> {
   TextEditingController cariText = new TextEditingController();
   EasyRefreshController _refresh;
 
-  Future<Null> getToken() async {
-    final resp = await MongoDatabase.getTokenListrik();
+  Future<Null> getBayar() async {
+    final resp = await MongoDatabase.getBayarListrik();
     setState(() {
-      for (Map token in resp) {
-        _token.add(Token.fromMap(token));
+      for (Map bayar in resp) {
+        _bayar.add(Bayar.fromMap(bayar));
       }
     });
   }
@@ -36,23 +35,23 @@ class _AllTokenPageState extends State<AllTokenPage> {
   void initState() {
     super.initState();
     _refresh = EasyRefreshController();
-    getToken();
+    getBayar();
   }
 
   Widget _tokenList() {
     return new ListView.builder(
-      itemCount: _token.length.clamp(startIndex, endIndex),
+      itemCount: _bayar.length.clamp(startIndex, endIndex),
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
-          child: TokenCardGrid(
-            token: Token.fromMap(
-              _token[index].toMap(),
+          child: BayarCardGrid(
+            bayar: Bayar.fromMap(
+              _bayar[index].toMap(),
             ),
-            detailToken: () {
+            detailBayar: () {
               showDetail(
-                Token.fromMap(
-                  _token[index].toMap(),
+                Bayar.fromMap(
+                  _bayar[index].toMap(),
                 ),
               );
             },
@@ -68,13 +67,13 @@ class _AllTokenPageState extends State<AllTokenPage> {
       itemBuilder: (context, index) {
         return new Padding(
           padding: const EdgeInsets.all(8.0),
-          child: TokenCardGrid(
-            token: Token.fromMap(
+          child: BayarCardGrid(
+            bayar: Bayar.fromMap(
               _searchResult[index].toMap(),
             ),
-            detailToken: () {
+            detailBayar: () {
               showDetail(
-                Token.fromMap(
+                Bayar.fromMap(
                   _searchResult[index].toMap(),
                 ),
               );
@@ -94,7 +93,7 @@ class _AllTokenPageState extends State<AllTokenPage> {
           title: new TextField(
             controller: cariText,
             decoration: new InputDecoration(
-                hintText: 'Cari Nama / Token Listrik',
+                hintText: 'Cari Nama / Nomor Pembayaran Listrik',
                 border: InputBorder.none),
             onChanged: onSearchTextChanged,
           ),
@@ -164,7 +163,7 @@ class _AllTokenPageState extends State<AllTokenPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Token Listrik'),
+        title: new Text('Bayar Listrik'),
         elevation: 0.0,
       ),
       body: _body(),
@@ -172,7 +171,7 @@ class _AllTokenPageState extends State<AllTokenPage> {
     );
   }
 
-  showDetail(Token token) {
+  showDetail(Bayar bayar) {
     Widget cancelButton = TextButton(
       child: Text("Tutup"),
       onPressed: () {
@@ -204,7 +203,7 @@ class _AllTokenPageState extends State<AllTokenPage> {
                       topRight: Radius.circular(15.0)),
                 ),
                 child: Text(
-                  "${token.nama}",
+                  "${bayar.nama}",
                   style: TextStyle(
                       fontSize: 25.0,
                       color: Colors.white,
@@ -220,7 +219,7 @@ class _AllTokenPageState extends State<AllTokenPage> {
               padding:
                   const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 8.0),
               child: Text(
-                token.nomor,
+                bayar.nomor,
                 style: TextStyle(fontSize: 20.0),
                 textAlign: TextAlign.center,
               ),
@@ -248,9 +247,9 @@ class _AllTokenPageState extends State<AllTokenPage> {
       return;
     }
 
-    _token.forEach((token) {
-      if (token.nama.toLowerCase().contains(text.toLowerCase()) ||
-          token.nomor.contains(text)) _searchResult.add(token);
+    _bayar.forEach((bayar) {
+      if (bayar.nama.toLowerCase().contains(text.toLowerCase()) ||
+          bayar.nomor.contains(text)) _searchResult.add(bayar);
     });
 
     setState(() {});
