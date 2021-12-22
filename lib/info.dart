@@ -43,7 +43,10 @@ class _InfoState extends State<Info> {
               ),
               child: IconButton(
                 iconSize: 50.0,
-                icon: Icon(Icons.inventory, color: Colors.blue[300]),
+                icon: Icon(
+                  Icons.inventory,
+                  color: Colors.blue[300],
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -77,7 +80,10 @@ class _InfoState extends State<Info> {
               ),
               child: IconButton(
                 iconSize: 50.0,
-                icon: Icon(Icons.book_rounded, color: Colors.lightGreen),
+                icon: Icon(
+                  Icons.menu_book_rounded,
+                  color: Colors.lightGreen,
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -111,7 +117,10 @@ class _InfoState extends State<Info> {
               ),
               child: IconButton(
                 iconSize: 50.0,
-                icon: Icon(Icons.library_books, color: Colors.orange[300]),
+                icon: Icon(
+                  Icons.library_books,
+                  color: Colors.orange[300],
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -145,7 +154,10 @@ class _InfoState extends State<Info> {
               ),
               child: IconButton(
                 iconSize: 50.0,
-                icon: Icon(Icons.list_alt_rounded, color: Colors.purple[300]),
+                icon: Icon(
+                  Icons.list_alt_rounded,
+                  color: Colors.purple[300],
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,

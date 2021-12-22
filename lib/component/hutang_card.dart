@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:kikiapp/models/token.dart';
+import 'package:kikiapp/models/hutang.dart';
 
-class TokenCard extends StatelessWidget {
-  const TokenCard(
-      {this.token, this.onPress, this.onLongDelete, this.onTapEdit});
+class HutangCard extends StatelessWidget {
+  const HutangCard(
+      {this.hutang, this.onTapListHutang, this.onLongDelete, this.onTapEdit});
 
-  final Token token;
-  final Function onLongDelete, onTapEdit, onPress;
+  final Hutang hutang;
+  final Function onLongDelete, onTapEdit, onTapListHutang;
 
   @override
   Widget build(BuildContext context) {
@@ -15,14 +15,14 @@ class TokenCard extends StatelessWidget {
       elevation: 3.0,
       color: Colors.white,
       child: ListTile(
-        onTap: onPress,
+        onTap: onTapListHutang,
         onLongPress: onLongDelete,
         leading: Image.asset(
           'assets/Dprofile.png',
           width: 60,
         ),
-        title: Text(token.nama),
-        subtitle: Text('Nomor : ${token.nomor}'),
+        title: Text('Rp. ' + hutang.harga),
+        subtitle: Text(hutang.tanggal_update),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

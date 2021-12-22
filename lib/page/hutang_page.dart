@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:kikiapp/component/userHutang_card.dart';
+import 'package:kikiapp/component/hutang_card.dart';
 import 'package:kikiapp/database/database.dart';
+import 'package:kikiapp/models/hutang.dart';
 import 'package:kikiapp/models/userHutang.dart';
 import 'package:kikiapp/navbarButtom.dart';
-import 'package:kikiapp/page/hutang_page.dart';
-import 'package:kikiapp/page/add_userHutang_page.dart';
+import 'package:kikiapp/page/add_hutang_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserHutangPage extends StatefulWidget {
-  UserHutangPage({Key key}) : super(key: key);
+class HutangPage extends StatefulWidget {
+  HutangPage({Key key}) : super(key: key);
 
   @override
-  _UserHutangPageState createState() => _UserHutangPageState();
+  _HutangPageState createState() => _HutangPageState();
 }
 
-class _UserHutangPageState extends State<UserHutangPage> {
+class _HutangPageState extends State<HutangPage> {
   String searchString = "";
   TextEditingController cariController = new TextEditingController();
 
@@ -34,8 +34,9 @@ class _UserHutangPageState extends State<UserHutangPage> {
 
   @override
   Widget build(BuildContext context) {
+    final UserHutang userH = ModalRoute.of(context).settings.arguments;
     return FutureBuilder(
-      future: MongoDatabase.getUserHutang(),
+      future: MongoDatabase.getHutangById(userH),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
@@ -43,7 +44,7 @@ class _UserHutangPageState extends State<UserHutangPage> {
               child: new Hero(
                 tag: AppBar,
                 child: new AppBar(
-                  title: Text('User Hutang'),
+                  title: Text('Hutang ' + userH.nama),
                   centerTitle: true,
                   actions: [_tombol()],
                 ),
@@ -63,8 +64,7 @@ class _UserHutangPageState extends State<UserHutangPage> {
                           title: new TextField(
                             controller: cariController,
                             decoration: new InputDecoration(
-                                hintText: 'Cari Nama User',
-                                border: InputBorder.none),
+                                hintText: 'Cari', border: InputBorder.none),
                             onChanged: (value) {
                               setState(() {
                                 searchString = value;
@@ -98,7 +98,10 @@ class _UserHutangPageState extends State<UserHutangPage> {
               onPressed: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (BuildContext context) {
-                  return AddUserHutangPage();
+                  return AddHutangPage(
+                    namaUser: userH.nama,
+                    id_user: userH.id.toJson(),
+                  );
                 })).then(
                   (value) => setState(() {}),
                 );
@@ -113,7 +116,7 @@ class _UserHutangPageState extends State<UserHutangPage> {
                 child: new Hero(
                   tag: AppBar,
                   child: new AppBar(
-                    title: Text('User Hutang'),
+                    title: Text('Hutang ' + userH.nama),
                     centerTitle: true,
                     actions: [_tombol()],
                   ),
@@ -139,7 +142,7 @@ class _UserHutangPageState extends State<UserHutangPage> {
                 child: new Hero(
                   tag: AppBar,
                   child: new AppBar(
-                    title: Text('User Hutang'),
+                    title: Text('Hutang ' + userH.nama),
                     centerTitle: true,
                     actions: [_tombol()],
                   ),
@@ -163,7 +166,10 @@ class _UserHutangPageState extends State<UserHutangPage> {
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (BuildContext context) {
-                    return AddUserHutangPage();
+                    return AddHutangPage(
+                      namaUser: userH.nama,
+                      id_user: userH.id.toJson(),
+                    );
                   })).then(
                     (value) => setState(() {}),
                   );
@@ -177,7 +183,7 @@ class _UserHutangPageState extends State<UserHutangPage> {
                 child: new Hero(
                   tag: AppBar,
                   child: new AppBar(
-                    title: Text('User Hutang'),
+                    title: Text('Hutang ' + userH.nama),
                     centerTitle: true,
                     actions: [_tombol()],
                   ),
@@ -198,8 +204,7 @@ class _UserHutangPageState extends State<UserHutangPage> {
                             title: new TextField(
                               controller: cariController,
                               decoration: new InputDecoration(
-                                  hintText: 'Cari Nama User',
-                                  border: InputBorder.none),
+                                  hintText: 'Cari', border: InputBorder.none),
                               onChanged: (value) {
                                 setState(() {
                                   searchString = value;
@@ -226,46 +231,40 @@ class _UserHutangPageState extends State<UserHutangPage> {
                       child: new ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
-                          return snapshot.data[index]['nama']
+                          return snapshot.data[index]['harga']
                                   .toString()
                                   .toLowerCase()
                                   .contains(searchString)
                               ? Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: UserHutangCard(
-                                    userH: UserHutang.fromMap(
-                                        snapshot.data[index]),
+                                  child: HutangCard(
+                                    hutang:
+                                        Hutang.fromMap(snapshot.data[index]),
                                     onLongDelete: () {
-                                      showAlertHapus(UserHutang.fromMap(
-                                          snapshot.data[index]));
+                                      showAlertHapus(
+                                        Hutang.fromMap(snapshot.data[index]),
+                                      );
                                     },
                                     onTapEdit: () async {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (BuildContext context) {
-                                            return AddUserHutangPage();
+                                            return AddHutangPage(
+                                              namaUser: userH.nama,
+                                              id_user: userH.id.toJson(),
+                                            );
                                           },
                                           settings: RouteSettings(
-                                            arguments: UserHutang.fromMap(
+                                            arguments: Hutang.fromMap(
                                                 snapshot.data[index]),
                                           ),
                                         ),
                                       ).then((value) => setState(() {}));
                                     },
                                     onTapListHutang: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (BuildContext context) {
-                                            return HutangPage();
-                                          },
-                                          settings: RouteSettings(
-                                            arguments: UserHutang.fromMap(
-                                                snapshot.data[index]),
-                                          ),
-                                        ),
-                                      ).then((value) => setState(() {}));
+                                      showDetail(
+                                          Hutang.fromMap(snapshot.data[index]));
                                     },
                                   ),
                                 )
@@ -281,7 +280,10 @@ class _UserHutangPageState extends State<UserHutangPage> {
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (BuildContext context) {
-                    return AddUserHutangPage();
+                    return AddHutangPage(
+                      namaUser: userH.nama,
+                      id_user: userH.id.toJson(),
+                    );
                   })).then((value) => setState(() {}));
                 },
                 child: Icon(Icons.add),
@@ -294,8 +296,53 @@ class _UserHutangPageState extends State<UserHutangPage> {
   }
 
   Future refreshToken() async {
-    await MongoDatabase.getUserHutang();
+    final UserHutang userH = ModalRoute.of(context).settings.arguments;
+    await MongoDatabase.getHutangById(userH);
     setState(() {});
+  }
+
+  showDetail(Hutang hutang) {
+    final UserHutang userH = ModalRoute.of(context).settings.arguments;
+
+    Widget cancelButton = TextButton(
+      child: Text("Kembali"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Hutang ${userH.nama}"),
+      content: Container(
+        height: 100.0,
+        child: Column(
+          children: [
+            Text(
+              "Jumlah : ${hutang.harga}",
+              textAlign: TextAlign.left,
+            ),
+            Text(
+              "Deskripsi : ${hutang.deskripsi}",
+              textAlign: TextAlign.left,
+            ),
+            Text(
+              "Update : ${hutang.tanggal_update}",
+              textAlign: TextAlign.left,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   showLogout() {
@@ -313,6 +360,7 @@ class _UserHutangPageState extends State<UserHutangPage> {
         setState(() {
           pref.clear();
         });
+        // Navigator.pop(context);
         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
           builder: (BuildContext context) {
             return NavbarButtom();
@@ -344,7 +392,7 @@ class _UserHutangPageState extends State<UserHutangPage> {
     );
   }
 
-  showAlertHapus(UserHutang userH) {
+  showAlertHapus(Hutang hutang) {
     Widget cancelButton = TextButton(
       child: Text("Kembali"),
       onPressed: () {
@@ -354,21 +402,21 @@ class _UserHutangPageState extends State<UserHutangPage> {
     Widget continueButton = TextButton(
       child: Text("Oke"),
       onPressed: () async {
-        await MongoDatabase.deleteUserHutang(userH);
+        await MongoDatabase.deleteHutang(hutang);
         setState(() {});
 
         Navigator.of(context).pop();
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${userH.nama} Sudah terhapus !!'),
+            content: Text('${hutang.harga} Sudah terhapus !!'),
           ),
         );
       },
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Hapus ${userH.nama}"),
+      title: Text("Hapus ${hutang.harga}"),
       content: Text("Apakah kamu yakin?"),
       actions: [
         cancelButton,

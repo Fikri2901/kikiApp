@@ -4,18 +4,19 @@ import 'package:kikiapp/models/userHutang.dart';
 
 class UserHutangCard extends StatelessWidget {
   const UserHutangCard(
-      {this.userH, this.onPress, this.onLongDelete, this.onTapEdit});
+      {this.userH, this.onTapListHutang, this.onLongDelete, this.onTapEdit});
 
   final UserHutang userH;
-  final Function onLongDelete, onTapEdit, onPress;
+  final Function onLongDelete, onTapEdit, onTapListHutang;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 2.0,
+      borderRadius: BorderRadius.circular(20.0),
+      elevation: 3.0,
       color: Colors.white,
       child: ListTile(
-        onTap: onPress,
+        onTap: onTapListHutang,
         onLongPress: onLongDelete,
         leading: Image.asset(
           'assets/Dprofile.png',

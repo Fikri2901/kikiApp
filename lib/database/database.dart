@@ -1,5 +1,6 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kikiapp/models/bayar.dart';
+import 'package:kikiapp/models/hutang.dart';
 import 'package:kikiapp/models/token.dart';
 import 'package:kikiapp/models/user.dart';
 import 'package:kikiapp/models/userHutang.dart';
@@ -188,6 +189,17 @@ class MongoDatabase {
     }
   }
 
+  static Future<List<Map<String, dynamic>>> getJumlah(UserHutang userH) async {
+    try {
+      final jml =
+          await hutangCollection.find({"id_user": userH.id.toJson()}).toList();
+      return jml;
+    } catch (e) {
+      print(e);
+      return Future.value(e);
+    }
+  }
+
   static insertUserHutang(UserHutang userH) async {
     await userHutangCollection.insertAll([userH.toMap()]);
   }
@@ -206,32 +218,45 @@ class MongoDatabase {
 
   //================== HUTANG =================//
 
-  // static Future<List<Map<String, dynamic>>> getBayarListrik() async {
-  //   try {
-  //     final bayar = await bayarCollection.find().toList();
-  //     return bayar;
-  //   } catch (e) {
-  //     print(e);
-  //     return Future.value(e);
-  //   }
-  // }
+  static Future<List<Map<String, dynamic>>> getHutangById(
+      UserHutang userH) async {
+    try {
+      final hutang =
+          await hutangCollection.find({"id_user": userH.id.toJson()}).toList();
+      return hutang;
+    } catch (e) {
+      print(e);
+      return Future.value(e);
+    }
+  }
 
-  // static insertBayar(Bayar bayar) async {
-  //   await bayarCollection.insertAll([bayar.toMap()]);
-  // }
+  static Future<List<Map<String, dynamic>>> getHutangByid(id) async {
+    try {
+      final hutang = await hutangCollection.find({"id_user": id}).toList();
+      return hutang;
+    } catch (e) {
+      print(e);
+      return Future.value(e);
+    }
+  }
 
-  // static updateBayar(Bayar bayar) async {
-  //   var u = await bayarCollection.findOne({"_id": bayar.id});
-  //   u["nama"] = bayar.nama;
-  //   u["nomor"] = bayar.nomor;
-  //   u["tanggal_upload"] = u["tanggal_upload"];
-  //   u["tanggal_update"] = DateTime.now().toString();
-  //   await bayarCollection.save(u);
-  // }
+  static insertHutang(Hutang hutang) async {
+    await hutangCollection.insertAll([hutang.toMap()]);
+  }
 
-  // static deleteBayar(Bayar bayar) async {
-  //   await bayarCollection.remove(where.id(bayar.id));
-  // }
+  static updateHutang(Hutang hutang) async {
+    var u = await hutangCollection.findOne({"_id": hutang.id});
+    u["harga"] = hutang.harga;
+    u["id_user"] = hutang.id_user;
+    u["deskripsi"] = hutang.deskripsi;
+    u["tanggal_upload"] = u["tanggal_upload"];
+    u["tanggal_update"] = DateTime.now().toString();
+    await hutangCollection.save(u);
+  }
+
+  static deleteHutang(Hutang hutang) async {
+    await hutangCollection.remove(where.id(hutang.id));
+  }
 
   //================== LOGIN ========================//
 

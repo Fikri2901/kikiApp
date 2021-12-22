@@ -11,7 +11,8 @@ class BayarCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 2.0,
+      borderRadius: BorderRadius.circular(20.0),
+      elevation: 3.0,
       color: Colors.white,
       child: ListTile(
         onTap: onPress,

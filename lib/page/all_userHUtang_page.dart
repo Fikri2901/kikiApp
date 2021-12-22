@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:intl/intl.dart';
 import 'package:kikiapp/component/userHutang_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
+import 'package:kikiapp/models/hutang.dart';
 import 'package:kikiapp/models/userHutang.dart';
+import 'package:kikiapp/page/add_userHutang_page.dart';
+import 'package:kikiapp/page/hutangUser_page.dart';
 
 class AllUserHutangPage extends StatefulWidget {
   AllUserHutangPage({Key key}) : super(key: key);
@@ -38,7 +42,7 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
     getUserhutang();
   }
 
-  Widget _tokenList() {
+  Widget _userHutangList() {
     return new ListView.builder(
       itemCount: _userH.length.clamp(startIndex, endIndex),
       itemBuilder: (context, index) {
@@ -53,6 +57,18 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
                 UserHutang.fromMap(
                   _userH[index].toMap(),
                 ),
+              );
+            },
+            infoDetail: () {
+              Navigator.push(
+                context,
+                geserKiriHalaman(
+                  page: HutangUserPage(
+                      id_user: _userH[index].id.toJson(),
+                      nama: _userH[index].nama),
+                ),
+              ).then(
+                (value) => setState(() {}),
               );
             },
           ),
@@ -78,6 +94,18 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
                 ),
               );
             },
+            infoDetail: () {
+              Navigator.push(
+                context,
+                geserKiriHalaman(
+                  page: HutangUserPage(
+                      id_user: _userH[index].id.toJson(),
+                      nama: _userH[index].nama),
+                ),
+              ).then(
+                (value) => setState(() {}),
+              );
+            },
           ),
         );
       },
@@ -87,21 +115,24 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
   Widget _searchBox() {
     return new Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Card(
-        child: new ListTile(
-          leading: new Icon(Icons.search),
-          title: new TextField(
-            controller: cariText,
-            decoration: new InputDecoration(
-                hintText: 'Cari Nama', border: InputBorder.none),
-            onChanged: onSearchTextChanged,
-          ),
-          trailing: new IconButton(
-            icon: new Icon(Icons.cancel),
-            onPressed: () {
-              cariText.clear();
-              onSearchTextChanged('');
-            },
+      child: Hero(
+        tag: 'cari',
+        child: new Card(
+          child: new ListTile(
+            leading: new Icon(Icons.search),
+            title: new TextField(
+              controller: cariText,
+              decoration: new InputDecoration(
+                  hintText: 'Cari Nama', border: InputBorder.none),
+              onChanged: onSearchTextChanged,
+            ),
+            trailing: new IconButton(
+              icon: new Icon(Icons.cancel),
+              onPressed: () {
+                cariText.clear();
+                onSearchTextChanged('');
+              },
+            ),
           ),
         ),
       ),
@@ -151,7 +182,7 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
             },
             child: _searchResult.length != 0 || cariText.text.isNotEmpty
                 ? _hasilCari()
-                : _tokenList(),
+                : _userHutangList(),
           ),
         ),
       ],
@@ -162,7 +193,7 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Token Listrik'),
+        title: new Text('Buku Hutang'),
         elevation: 0.0,
       ),
       body: _body(),
@@ -170,7 +201,21 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
     );
   }
 
-  showDetail(UserHutang userH) {
+  showDetail(UserHutang userH) async {
+    ScrollController _controller;
+    final rp = NumberFormat("#,##0", "en_US");
+
+    final resp = await MongoDatabase.getJumlah(userH);
+    int sum = 0;
+    List tampil = [];
+
+    for (var i = 0; i < resp.length; i++) {
+      sum += num.parse(resp[i]['harga']);
+      tampil.add(resp[i]);
+    }
+
+    print(tampil);
+
     Widget cancelButton = TextButton(
       child: Text("Tutup"),
       onPressed: () {
@@ -214,14 +259,38 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
             SizedBox(
               height: 10.0,
             ),
+            SingleChildScrollView(
+              child: Container(
+                height: 100.0,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10.0, left: 10.0),
+                  child: ListView.builder(
+                      controller: _controller,
+                      itemCount: tampil.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return new Text('Rp. ' +
+                            rp.format(num.parse(tampil[index]['harga'])) +
+                            ' = ' +
+                            tampil[index]['deskripsi']);
+                      }),
+                ),
+              ),
+            ),
             Padding(
               padding:
                   const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 8.0),
-              child: Text(
-                'data hutang',
-                style: TextStyle(fontSize: 20.0),
-                textAlign: TextAlign.center,
-              ),
+              child: sum != 0
+                  ? Text(
+                      'Total: Rp. ' + rp.format(sum).toString(),
+                      style: TextStyle(fontSize: 20.0),
+                      textAlign: TextAlign.center,
+                    )
+                  : Text(
+                      'Tidak ada Hutang',
+                      style: TextStyle(fontSize: 20.0),
+                      textAlign: TextAlign.center,
+                    ),
             ),
           ],
         ),
@@ -253,4 +322,31 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
 
     setState(() {});
   }
+}
+
+// ignore: camel_case_types
+class geserKiriHalaman extends PageRouteBuilder {
+  final Widget page;
+  geserKiriHalaman({this.page})
+      : super(
+          pageBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) =>
+              page,
+          transitionsBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+            Widget child,
+          ) =>
+              SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        );
 }

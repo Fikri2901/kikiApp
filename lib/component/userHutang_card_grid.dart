@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kikiapp/models/userHutang.dart';
 
 class UserHutangCardGrid extends StatelessWidget {
-  UserHutangCardGrid({this.userH, this.detailUserHutang});
-
+  UserHutangCardGrid({this.userH, this.detailUserHutang, this.infoDetail});
+  final Function infoDetail;
   final UserHutang userH;
   final Function detailUserHutang;
 
@@ -20,7 +20,10 @@ class UserHutangCardGrid extends StatelessWidget {
           width: 60,
         ),
         title: Text(userH.nama),
-        subtitle: Text('Jumlah Hutang : total'),
+        trailing: TextButton(
+          onPressed: infoDetail,
+          child: Icon(Icons.info_outline_rounded),
+        ),
       ),
     );
   }
