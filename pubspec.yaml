@@ -38,6 +38,8 @@ dependencies:
   transparent_image: ^1.0.0
   sliding_clipped_nav_bar: ^2.0.1
   flutter_easyrefresh: ^2.2.1
+  bouncing_widget: ^1.2.3
+  fluent_appbar: ^1.0.0
 
 dev_dependencies:
   flutter_test:

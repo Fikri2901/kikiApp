@@ -214,8 +214,6 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
       tampil.add(resp[i]);
     }
 
-    print(tampil);
-
     Widget cancelButton = TextButton(
       child: Text("Tutup"),
       onPressed: () {

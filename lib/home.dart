@@ -5,6 +5,7 @@ import 'package:kikiapp/page/all_barang_page.dart';
 import 'package:kikiapp/page/all_bayar_page.dart';
 import 'package:kikiapp/page/all_token_page.dart';
 import 'package:kikiapp/page/all_userHUtang_page.dart';
+import 'package:bouncing_widget/bouncing_widget.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -38,26 +39,31 @@ class _HomeState extends State<Home> {
         GridTile(
           child: Column(
             children: [
-              Material(
-                shadowColor: shadowColor,
-                borderRadius: BorderRadius.circular(20.0),
-                color: Colors.white,
-                child: IconButton(
-                  iconSize: ukuranIcon,
-                  color: Colors.blue[400],
-                  icon: Icon(
-                    Icons.inventory,
+              BouncingWidget(
+                duration: Duration(milliseconds: 100),
+                scaleFactor: 2,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    ZoomAnimasi(
+                      page: AllBarangPage(),
+                    ),
+                  ).then(
+                    (value) => setState(() {}),
+                  );
+                },
+                child: Material(
+                  shadowColor: shadowColor,
+                  borderRadius: BorderRadius.circular(20.0),
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.inventory,
+                      size: ukuranIcon,
+                      color: Colors.blue[300],
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      ZoomAnimasi(
-                        page: AllBarangPage(),
-                      ),
-                    ).then(
-                      (value) => setState(() {}),
-                    );
-                  },
                 ),
               ),
               Expanded(
@@ -79,26 +85,31 @@ class _HomeState extends State<Home> {
         GridTile(
           child: Column(
             children: [
-              Material(
-                shadowColor: shadowColor,
-                borderRadius: BorderRadius.circular(20.0),
-                color: Colors.white,
-                child: IconButton(
-                  iconSize: ukuranIcon,
-                  color: Colors.lightGreen,
-                  icon: Icon(
-                    Icons.menu_book_rounded,
+              BouncingWidget(
+                duration: Duration(milliseconds: 100),
+                scaleFactor: 2,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    ZoomAnimasi(
+                      page: AllUserHutangPage(),
+                    ),
+                  ).then(
+                    (value) => setState(() {}),
+                  );
+                },
+                child: Material(
+                  shadowColor: shadowColor,
+                  borderRadius: BorderRadius.circular(20.0),
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.menu_book_rounded,
+                      size: ukuranIcon,
+                      color: Colors.lightGreen,
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      ZoomAnimasi(
-                        page: AllUserHutangPage(),
-                      ),
-                    ).then(
-                      (value) => setState(() {}),
-                    );
-                  },
                 ),
               ),
               Expanded(
@@ -120,26 +131,31 @@ class _HomeState extends State<Home> {
         GridTile(
           child: Column(
             children: [
-              Material(
-                shadowColor: shadowColor,
-                borderRadius: BorderRadius.circular(20.0),
-                color: Colors.white,
-                child: IconButton(
-                  iconSize: ukuranIcon,
-                  color: Colors.orange[300],
-                  icon: Icon(
-                    Icons.library_books,
+              BouncingWidget(
+                duration: Duration(milliseconds: 100),
+                scaleFactor: 2,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    ZoomAnimasi(
+                      page: AllTokenPage(),
+                    ),
+                  ).then(
+                    (value) => setState(() {}),
+                  );
+                },
+                child: Material(
+                  shadowColor: shadowColor,
+                  borderRadius: BorderRadius.circular(20.0),
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.library_books,
+                      size: ukuranIcon,
+                      color: Colors.orange[300],
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      ZoomAnimasi(
-                        page: AllTokenPage(),
-                      ),
-                    ).then(
-                      (value) => setState(() {}),
-                    );
-                  },
                 ),
               ),
               Expanded(
@@ -161,26 +177,31 @@ class _HomeState extends State<Home> {
         GridTile(
           child: Column(
             children: [
-              Material(
-                shadowColor: shadowColor,
-                borderRadius: BorderRadius.circular(20.0),
-                color: Colors.white,
-                child: IconButton(
-                  iconSize: ukuranIcon,
-                  color: Colors.purple[300],
-                  icon: Icon(
-                    Icons.list_alt_rounded,
+              BouncingWidget(
+                duration: Duration(milliseconds: 100),
+                scaleFactor: 2,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    ZoomAnimasi(
+                      page: AllBayarPage(),
+                    ),
+                  ).then(
+                    (value) => setState(() {}),
+                  );
+                },
+                child: Material(
+                  shadowColor: shadowColor,
+                  borderRadius: BorderRadius.circular(20.0),
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.list_alt_rounded,
+                      size: ukuranIcon,
+                      color: Colors.purple[300],
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      ZoomAnimasi(
-                        page: AllBayarPage(),
-                      ),
-                    ).then(
-                      (value) => setState(() {}),
-                    );
-                  },
                 ),
               ),
               Expanded(

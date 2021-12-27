@@ -17,12 +17,8 @@ class HutangCard extends StatelessWidget {
       child: ListTile(
         onTap: onTapListHutang,
         onLongPress: onLongDelete,
-        leading: Image.asset(
-          'assets/Dprofile.png',
-          width: 60,
-        ),
+        leading: Icon(Icons.keyboard_arrow_right_rounded),
         title: Text('Rp. ' + hutang.harga),
-        subtitle: Text(hutang.tanggal_update),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
