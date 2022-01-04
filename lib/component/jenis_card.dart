@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:kikiapp/models/jenis.dart';
 
 class JenisCard extends StatelessWidget {
@@ -21,32 +22,35 @@ class JenisCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: BorderRadius.circular(20.0),
-      elevation: 3.0,
-      color: Colors.white,
-      child: ListTile(
-        onTap: onTapListBarang,
-        onLongPress: onLongDelete,
-        leading: CachedNetworkImage(
-          imageUrl: jenis.gambar,
-          placeholder: (BuildContext context, String url) => Container(
-            width: 60,
-            height: 60,
-            color: Colors.grey,
-          ),
-          errorWidget: _error,
-        ),
-        title: Text(jenis.nama),
-        subtitle: Text('update: ${jenis.tanggal_update}'),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            GestureDetector(
-              child: Icon(Icons.edit),
-              onTap: onTapEdit,
+    return Bounceable(
+      onTap: onTapListBarang,
+      child: Material(
+        borderRadius: BorderRadius.circular(20.0),
+        elevation: 3.0,
+        color: Colors.white,
+        child: ListTile(
+          onTap: onTapListBarang,
+          onLongPress: onLongDelete,
+          leading: CachedNetworkImage(
+            imageUrl: jenis.gambar,
+            placeholder: (BuildContext context, String url) => Container(
+              width: 60,
+              height: 60,
+              color: Colors.grey,
             ),
-          ],
+            errorWidget: _error,
+          ),
+          title: Text(jenis.nama),
+          subtitle: Text('update: ${jenis.tanggal_update}'),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              GestureDetector(
+                child: Icon(Icons.edit),
+                onTap: onTapEdit,
+              ),
+            ],
+          ),
         ),
       ),
     );

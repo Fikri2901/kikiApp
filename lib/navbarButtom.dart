@@ -23,7 +23,9 @@ class _NavbarButtomState extends State<NavbarButtom> {
     setState(() {
       selectedIndex = index;
     });
-    _pageController.jumpToPage(selectedIndex);
+    // _pageController.jumpToPage(selectedIndex);
+    _pageController.animateToPage(selectedIndex,
+        duration: const Duration(milliseconds: 400), curve: Curves.easeOutQuad);
   }
 
   @override
@@ -49,19 +51,19 @@ class _NavbarButtomState extends State<NavbarButtom> {
           BarItem(
             icon: Icons.home,
             title: 'Home',
-            activeColor: Colors.blue[400],
+            activeColor: Colors.red[400],
             inactiveColor: Colors.red[400],
           ),
           BarItem(
             icon: Icons.inventory,
             title: 'Barang',
-            activeColor: Colors.orange[400],
+            activeColor: Colors.red[400],
             inactiveColor: Colors.red[400],
           ),
           BarItem(
-            icon: Icons.info_outline_rounded,
-            title: 'Info',
-            activeColor: Colors.green[400],
+            icon: Icons.settings_rounded,
+            title: 'Pengaturan',
+            activeColor: Colors.red[400],
             inactiveColor: Colors.red[400],
           ),
         ],

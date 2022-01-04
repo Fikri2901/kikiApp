@@ -122,7 +122,10 @@ class _AllTokenPageState extends State<AllTokenPage> {
             enableControlFinishRefresh: false,
             enableControlFinishLoad: true,
             controller: _refresh,
-            header: PhoenixHeader(),
+            header: BezierCircleHeader(
+              color: Colors.white,
+              backgroundColor: Colors.red[400],
+            ),
             footer: MaterialFooter(),
             onRefresh: () async {
               await Future.delayed(

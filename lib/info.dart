@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/login.dart';
@@ -8,6 +11,7 @@ import 'package:kikiapp/page/token_page.dart';
 import 'package:kikiapp/page/userHutang_page.dart';
 // import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Info extends StatefulWidget {
   Info({Key key}) : super(key: key);
@@ -20,11 +24,20 @@ class _InfoState extends State<Info> {
   String _admin = "";
   EasyRefreshController _refresh;
 
+  final double _initFabHeight = 120.0;
+  double _fabHeight = 0;
+  double _panelHeightOpen = 0;
+  double _panelHeightClosed = 45.0;
+
+  bool _switchValue = true;
+
   @override
   void initState() {
     super.initState();
     _refresh = EasyRefreshController();
     _panggilAdmin();
+
+    _fabHeight = _initFabHeight;
   }
 
   Widget menuIcon() {
@@ -193,11 +206,14 @@ class _InfoState extends State<Info> {
           padding: const EdgeInsets.all(10.0),
           child: Material(
             borderRadius: BorderRadius.circular(10),
-            elevation: 3,
+            elevation: 4,
+            color: Colors.white,
             child: ListTile(
               onTap: () {},
-              leading: Text('icon'),
-              title: Text('Hello'),
+              leading: Icon(
+                Icons.info_outline_rounded,
+              ),
+              title: Text('Info'),
             ),
           ),
         ),
@@ -205,83 +221,24 @@ class _InfoState extends State<Info> {
           padding: const EdgeInsets.all(10.0),
           child: Material(
             borderRadius: BorderRadius.circular(10),
-            elevation: 3,
+            elevation: 4,
+            color: Colors.white,
             child: ListTile(
               onTap: () {},
-              leading: Text('icon'),
-              title: Text('Hello'),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Material(
-            borderRadius: BorderRadius.circular(10),
-            elevation: 3,
-            child: ListTile(
-              onTap: () {},
-              leading: Text('icon'),
-              title: Text('Hello'),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Material(
-            borderRadius: BorderRadius.circular(10),
-            elevation: 3,
-            child: ListTile(
-              onTap: () {},
-              leading: Text('icon'),
-              title: Text('Hello'),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Material(
-            borderRadius: BorderRadius.circular(10),
-            elevation: 3,
-            child: ListTile(
-              onTap: () {},
-              leading: Text('icon'),
-              title: Text('Hello'),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Material(
-            borderRadius: BorderRadius.circular(10),
-            elevation: 3,
-            child: ListTile(
-              onTap: () {},
-              leading: Text('icon'),
-              title: Text('Hello'),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Material(
-            borderRadius: BorderRadius.circular(10),
-            elevation: 3,
-            child: ListTile(
-              onTap: () {},
-              leading: Text('icon'),
-              title: Text('Hello'),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Material(
-            borderRadius: BorderRadius.circular(10),
-            elevation: 3,
-            child: ListTile(
-              onTap: () {},
-              leading: Text('icon'),
-              title: Text('Hello'),
+              leading: Icon(
+                Icons.house_rounded,
+              ),
+              title: Text('Tema'),
+              trailing: CupertinoSwitch(
+                  value: _switchValue,
+                  activeColor: Colors.red[400],
+                  onChanged: (value) {
+                    setState(
+                      () {
+                        _switchValue = value;
+                      },
+                    );
+                  }),
             ),
           ),
         ),
@@ -292,90 +249,171 @@ class _InfoState extends State<Info> {
   Widget _tombolLogout() {
     return IconButton(
       icon: Icon(Icons.lock_open),
+      color: Colors.red[400],
       onPressed: () {
         showLogout();
       },
     );
   }
 
-  Widget _tampilan() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: Column(
-          children: [
-            _admin == 'kikicell'
-                ? Container(
-                    margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-                    height: 125.0,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: menuIcon(),
-                  )
-                // ignore: deprecated_member_use
-                : OutlineButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) {
-                            return LoginPage();
-                          },
-                        ),
-                      );
-                    },
-                    child: Text('Login Admin')),
-            listMenu(),
-          ],
+  Widget _body() {
+    return EasyRefresh(
+      enableControlFinishRefresh: false,
+      enableControlFinishLoad: true,
+      controller: _refresh,
+      header: BezierCircleHeader(
+        color: Colors.white,
+        backgroundColor: Colors.red[400],
+      ),
+      onRefresh: () async {
+        await Future.delayed(
+          Duration(seconds: 2),
+          () {
+            setState(
+              () {},
+            );
+            _refresh.resetLoadState();
+          },
+        );
+      },
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 10.0),
+          child: listMenu(),
         ),
+      ),
+    );
+  }
+
+  Widget _panel(ScrollController sc) {
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      child: ListView(
+        controller: sc,
+        children: <Widget>[
+          SizedBox(
+            height: 12.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: 50.0,
+                height: 5.0,
+                decoration: BoxDecoration(
+                  color: Colors.red[200],
+                  borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 30.0,
+          ),
+          _admin == 'kikicell'
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red[300],
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          'ADMIN',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : SizedBox(
+                  height: 0,
+                ),
+          SizedBox(
+            height: 25.0,
+          ),
+          _admin == 'kikicell'
+              ? Container(
+                  // padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+                  margin: const EdgeInsets.only(right: 10.0, left: 10.0),
+                  height: 125.0,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: menuIcon(),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    OutlineButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) {
+                                return LoginPage();
+                              },
+                            ),
+                          );
+                        },
+                        child: Text('Login Admin')),
+                  ],
+                ),
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    _panelHeightOpen = MediaQuery.of(context).size.height * .45;
+
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text('Kiki Cell'),
+        title: Text(
+          'Pengaturan',
+          style: TextStyle(
+            color: Colors.red[400],
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
         actions: _admin == 'kikicell'
             ? <Widget>[
                 _tombolLogout(),
               ]
             : null,
       ),
-      body: EasyRefresh(
-        enableControlFinishRefresh: false,
-        enableControlFinishLoad: true,
-        controller: _refresh,
-        header: PhoenixHeader(),
-        footer: MaterialFooter(),
-        onRefresh: () async {
-          await Future.delayed(
-            Duration(seconds: 2),
-            () {
-              print('onRefresh');
-              setState(
-                () {},
-              );
-              _refresh.resetLoadState();
-            },
-          );
-        },
-        onLoad: () async {
-          await Future.delayed(
-            Duration(seconds: 2),
-            () {
-              setState(
-                () {},
-              );
-              _refresh.finishLoad();
-            },
-          );
-        },
-        child: _tampilan(),
+      body: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          SlidingUpPanel(
+            maxHeight: _panelHeightOpen,
+            minHeight: _panelHeightClosed,
+            // parallaxEnabled: true,
+            // parallaxOffset: .5,
+            body: _body(),
+            panelBuilder: (sc) => _panel(sc),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(18.0),
+                topRight: Radius.circular(18.0)),
+            onPanelSlide: (double pos) => setState(() {
+              _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) +
+                  _initFabHeight;
+            }),
+          ),
+        ],
       ),
     );
   }

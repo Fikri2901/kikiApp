@@ -36,13 +36,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  bouncing_widget:
-    dependency: "direct main"
-    description:
-      name: bouncing_widget
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.2.3"
   bson:
     dependency: transitive
     description:
@@ -209,6 +202,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.0"
+  flutter_bounceable:
+    dependency: "direct main"
+    description:
+      name: flutter_bounceable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -504,6 +504,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  sliding_up_panel:
+    dependency: "direct main"
+    description:
+      name: sliding_up_panel
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0+1"
   source_span:
     dependency: transitive
     description:

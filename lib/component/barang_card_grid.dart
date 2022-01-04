@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:kikiapp/models/barang.dart';
 
 class BarangCardGrid extends StatelessWidget {
@@ -20,17 +21,17 @@ class BarangCardGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: detailBarang,
-      child: Material(
-        borderRadius: BorderRadius.circular(15.0),
-        elevation: 5.0,
-        color: Colors.white,
-        child: Container(
-          // margin: const EdgeInsets.only(top: 10.0),
+    return GridTile(
+      child: Bounceable(
+        onTap: detailBarang,
+        child: Material(
+          borderRadius: BorderRadius.circular(20.0),
+          color: Colors.white,
+          elevation: 5.0,
           child: Column(
             children: [
               Container(
+                padding: const EdgeInsets.only(top: 10.0),
                 width: 100.0,
                 height: 100.0,
                 child: CachedNetworkImage(

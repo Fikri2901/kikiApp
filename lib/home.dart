@@ -1,11 +1,12 @@
+import 'package:fluent_appbar/fluent_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:kikiapp/page/all_barang_page.dart';
 import 'package:kikiapp/page/all_bayar_page.dart';
 import 'package:kikiapp/page/all_token_page.dart';
 import 'package:kikiapp/page/all_userHUtang_page.dart';
-import 'package:bouncing_widget/bouncing_widget.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -18,6 +19,7 @@ class _HomeState extends State<Home> {
   EasyRefreshController _refresh;
   int _current = 0;
   final CarouselController _controller = CarouselController();
+  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -27,7 +29,8 @@ class _HomeState extends State<Home> {
 
   final double ukuranFont = 18.0;
   final double ukuranIcon = 70.0;
-  final Color shadowColor = Colors.red;
+  final Color colorIcon = Colors.white;
+  final Color shadowColor = Colors.red.withOpacity(0.5);
 
   Widget menuIcon() {
     return GridView.count(
@@ -39,10 +42,8 @@ class _HomeState extends State<Home> {
         GridTile(
           child: Column(
             children: [
-              BouncingWidget(
-                duration: Duration(milliseconds: 100),
-                scaleFactor: 2,
-                onPressed: () {
+              Bounceable(
+                onTap: () {
                   Navigator.push(
                     context,
                     ZoomAnimasi(
@@ -55,13 +56,13 @@ class _HomeState extends State<Home> {
                 child: Material(
                   shadowColor: shadowColor,
                   borderRadius: BorderRadius.circular(20.0),
-                  color: Colors.white,
+                  color: Colors.red[400],
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(
                       Icons.inventory,
                       size: ukuranIcon,
-                      color: Colors.blue[300],
+                      color: colorIcon,
                     ),
                   ),
                 ),
@@ -85,10 +86,8 @@ class _HomeState extends State<Home> {
         GridTile(
           child: Column(
             children: [
-              BouncingWidget(
-                duration: Duration(milliseconds: 100),
-                scaleFactor: 2,
-                onPressed: () {
+              Bounceable(
+                onTap: () {
                   Navigator.push(
                     context,
                     ZoomAnimasi(
@@ -101,13 +100,13 @@ class _HomeState extends State<Home> {
                 child: Material(
                   shadowColor: shadowColor,
                   borderRadius: BorderRadius.circular(20.0),
-                  color: Colors.white,
+                  color: Colors.red[400],
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(
                       Icons.menu_book_rounded,
                       size: ukuranIcon,
-                      color: Colors.lightGreen,
+                      color: colorIcon,
                     ),
                   ),
                 ),
@@ -131,10 +130,8 @@ class _HomeState extends State<Home> {
         GridTile(
           child: Column(
             children: [
-              BouncingWidget(
-                duration: Duration(milliseconds: 100),
-                scaleFactor: 2,
-                onPressed: () {
+              Bounceable(
+                onTap: () {
                   Navigator.push(
                     context,
                     ZoomAnimasi(
@@ -147,13 +144,13 @@ class _HomeState extends State<Home> {
                 child: Material(
                   shadowColor: shadowColor,
                   borderRadius: BorderRadius.circular(20.0),
-                  color: Colors.white,
+                  color: Colors.red[400],
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(
                       Icons.library_books,
                       size: ukuranIcon,
-                      color: Colors.orange[300],
+                      color: colorIcon,
                     ),
                   ),
                 ),
@@ -177,10 +174,8 @@ class _HomeState extends State<Home> {
         GridTile(
           child: Column(
             children: [
-              BouncingWidget(
-                duration: Duration(milliseconds: 100),
-                scaleFactor: 2,
-                onPressed: () {
+              Bounceable(
+                onTap: () {
                   Navigator.push(
                     context,
                     ZoomAnimasi(
@@ -193,13 +188,13 @@ class _HomeState extends State<Home> {
                 child: Material(
                   shadowColor: shadowColor,
                   borderRadius: BorderRadius.circular(20.0),
-                  color: Colors.white,
+                  color: Colors.red[400],
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(
                       Icons.list_alt_rounded,
                       size: ukuranIcon,
-                      color: Colors.purple[300],
+                      color: colorIcon,
                     ),
                   ),
                 ),
@@ -227,7 +222,7 @@ class _HomeState extends State<Home> {
   Widget tampilan() {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.only(top: 10.0),
+        padding: EdgeInsets.only(top: 10.0),
         child: Column(
           children: [
             CarouselSlider(
@@ -264,11 +259,22 @@ class _HomeState extends State<Home> {
               }).toList(),
             ),
             Container(
-              margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-              height: 370.0,
+              margin: const EdgeInsets.only(right: 10.0, left: 10.0, top: 5.0),
+              height: 570.0,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: Offset(0, 3),
+                  )
+                ],
               ),
               child: menuIcon(),
             )
@@ -278,25 +284,24 @@ class _HomeState extends State<Home> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Kiki Cell'),
-        centerTitle: true,
-        actions: <Widget>[],
+  Widget refresh() {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: AppBar().preferredSize.height + MediaQuery.of(context).padding.top,
       ),
-      body: EasyRefresh(
+      child: EasyRefresh(
         enableControlFinishRefresh: false,
         enableControlFinishLoad: true,
         controller: _refresh,
-        header: PhoenixHeader(),
-        footer: MaterialFooter(),
+        scrollController: scrollController,
+        header: BezierCircleHeader(
+          color: Colors.white,
+          backgroundColor: Colors.red[400],
+        ),
         onRefresh: () async {
           await Future.delayed(
             Duration(seconds: 2),
             () {
-              print('onRefresh');
               setState(
                 () {},
               );
@@ -304,18 +309,24 @@ class _HomeState extends State<Home> {
             },
           );
         },
-        onLoad: () async {
-          await Future.delayed(
-            Duration(seconds: 2),
-            () {
-              setState(
-                () {},
-              );
-              _refresh.finishLoad();
-            },
-          );
-        },
         child: tampilan(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          refresh(),
+          FluentAppBar(
+            appBarColor: Colors.white,
+            titleText: "Kiki Cell",
+            scrollController: scrollController,
+            titleColor: Colors.red[400],
+          )
+        ],
       ),
     );
   }
@@ -335,7 +346,7 @@ final List<Widget> imageSliders = imgList
           child: Container(
             margin: EdgeInsets.all(5.0),
             child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                borderRadius: BorderRadius.all(Radius.circular(20.0)),
                 child: Stack(
                   children: <Widget>[
                     Image.asset(

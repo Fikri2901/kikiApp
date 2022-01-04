@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:kikiapp/models/bayar.dart';
 
 class BayarCardGrid extends StatelessWidget {
@@ -9,18 +10,21 @@ class BayarCardGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: BorderRadius.circular(20.0),
-      elevation: 3.0,
-      color: Colors.white,
-      child: ListTile(
-        onTap: detailBayar,
-        leading: Image.asset(
-          'assets/Dprofile.png',
-          width: 60,
+    return Bounceable(
+      onTap: detailBayar,
+      child: Material(
+        borderRadius: BorderRadius.circular(20.0),
+        elevation: 3.0,
+        color: Colors.white,
+        child: ListTile(
+          onTap: detailBayar,
+          leading: Image.asset(
+            'assets/Dprofile.png',
+            width: 60,
+          ),
+          title: Text(bayar.nama),
+          subtitle: Text('Token : ${bayar.nomor}'),
         ),
-        title: Text(bayar.nama),
-        subtitle: Text('Token : ${bayar.nomor}'),
       ),
     );
   }

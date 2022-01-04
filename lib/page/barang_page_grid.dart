@@ -129,7 +129,10 @@ class _BarangPageState extends State<BarangPage> {
             enableControlFinishRefresh: false,
             enableControlFinishLoad: true,
             controller: _refresh,
-            header: PhoenixHeader(),
+            header: BezierCircleHeader(
+              color: Colors.white,
+              backgroundColor: Colors.red[400],
+            ),
             footer: MaterialFooter(),
             onRefresh: () async {
               await Future.delayed(

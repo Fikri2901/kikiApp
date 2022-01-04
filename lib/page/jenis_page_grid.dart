@@ -131,31 +131,37 @@ class _JenisPageState extends State<JenisPage> {
             enableControlFinishRefresh: false,
             enableControlFinishLoad: true,
             controller: _refresh,
-            header: PhoenixHeader(),
-            footer: MaterialFooter(),
+            header: BezierCircleHeader(
+              color: Colors.white,
+              backgroundColor: Colors.red[400],
+            ),
+            // footer: MaterialFooter(),
             onRefresh: () async {
               await Future.delayed(
                 Duration(seconds: 2),
                 () {
                   print('onRefresh');
+
                   setState(
-                    () {},
+                    () {
+                      _jenis;
+                    },
                   );
                   _refresh.resetLoadState();
                 },
               );
             },
-            onLoad: () async {
-              await Future.delayed(
-                Duration(seconds: 2),
-                () {
-                  setState(
-                    () {},
-                  );
-                  _refresh.finishLoad();
-                },
-              );
-            },
+            // onLoad: () async {
+            //   await Future.delayed(
+            //     Duration(seconds: 2),
+            //     () {
+            //       setState(
+            //         () {},
+            //       );
+            //       _refresh.finishLoad();
+            //     },
+            //   );
+            // },
             child: _searchResult.length != 0 || controller.text.isNotEmpty
                 ? _hasilCari()
                 : _jenisList(),
