@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:kikiapp/component/token_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/token.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class AllTokenPage extends StatefulWidget {
   final String idJenis, namaJenis;
@@ -23,12 +27,21 @@ class _AllTokenPageState extends State<AllTokenPage> {
   TextEditingController cariText = new TextEditingController();
   EasyRefreshController _refresh;
 
+  bool isLoading = false;
+
   Future<Null> getToken() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Future.delayed(Duration(seconds: 2), () {});
+    await MongoDatabase.connect();
+    await Firebase.initializeApp();
     final resp = await MongoDatabase.getTokenListrik();
     setState(() {
       for (Map token in resp) {
         _token.add(Token.fromMap(token));
       }
+      isLoading = false;
     });
   }
 
@@ -39,25 +52,92 @@ class _AllTokenPageState extends State<AllTokenPage> {
     getToken();
   }
 
+  Widget _shimmerToken() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Material(
+        borderRadius: BorderRadius.circular(20.0),
+        elevation: 3.0,
+        color: Colors.white,
+        child: ListTile(
+          leading: Shimmer(
+            child: Container(
+              width: 60.0,
+              height: 60.0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: Colors.grey[400],
+              ),
+            ),
+            duration: Duration(seconds: 1),
+            interval: Duration(seconds: 1),
+            color: Colors.white,
+            colorOpacity: 0.3,
+            enabled: true,
+            direction: ShimmerDirection.fromLTRB(),
+          ),
+          title: Shimmer(
+            child: Container(
+              margin: const EdgeInsets.only(right: 80.0),
+              // width: 30.0,
+              height: 17.0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5.0),
+                color: Colors.grey[400],
+              ),
+            ),
+            duration: Duration(seconds: 1),
+            interval: Duration(seconds: 1),
+            color: Colors.white,
+            colorOpacity: 0.3,
+            enabled: true,
+            direction: ShimmerDirection.fromLTRB(),
+          ),
+          subtitle: Shimmer(
+            child: Container(
+              margin: const EdgeInsets.only(right: 120.0),
+              // width: 20.0,
+              height: 15.0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5.0),
+                color: Colors.grey[400],
+              ),
+            ),
+            duration: Duration(seconds: 1),
+            interval: Duration(seconds: 1),
+            color: Colors.white,
+            colorOpacity: 0.3,
+            enabled: true,
+            direction: ShimmerDirection.fromLTRB(),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _tokenList() {
     return new ListView.builder(
-      itemCount: _token.length.clamp(startIndex, endIndex),
+      itemCount: isLoading ? 7 : _token.length.clamp(startIndex, endIndex),
       itemBuilder: (context, index) {
-        return new Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TokenCardGrid(
-            token: Token.fromMap(
-              _token[index].toMap(),
+        if (isLoading) {
+          return _shimmerToken();
+        } else {
+          return new Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TokenCardGrid(
+              token: Token.fromMap(
+                _token[index].toMap(),
+              ),
+              detailToken: () {
+                showDetail(
+                  Token.fromMap(
+                    _token[index].toMap(),
+                  ),
+                );
+              },
             ),
-            detailToken: () {
-              showDetail(
-                Token.fromMap(
-                  _token[index].toMap(),
-                ),
-              );
-            },
-          ),
-        );
+          );
+        }
       },
     );
   }
@@ -131,7 +211,7 @@ class _AllTokenPageState extends State<AllTokenPage> {
               await Future.delayed(
                 Duration(seconds: 2),
                 () {
-                  print('onRefresh');
+                  pullrestart();
                   setState(
                     () {
                       endIndex = 10;
@@ -163,15 +243,80 @@ class _AllTokenPageState extends State<AllTokenPage> {
     );
   }
 
+  pullrestart() async {
+    await MongoDatabase.connect();
+    await Firebase.initializeApp();
+    if (_token.length > 0) {
+      print(_token.length);
+    } else {
+      getToken();
+    }
+    showSimpleNotification(
+      Text(
+        'Refresh Berhasil',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      background: Colors.green,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Token Listrik'),
-        elevation: 0.0,
+    return OfflineBuilder(
+      connectivityBuilder: (
+        BuildContext context,
+        ConnectivityResult connectivity,
+        Widget child,
+      ) {
+        if (connectivity == ConnectivityResult.none) {
+          return Scaffold(
+            appBar: new AppBar(
+              title: new Text('No Internet'),
+              centerTitle: true,
+              elevation: 0.0,
+            ),
+            body: Container(
+              color: Colors.white,
+              child: Center(
+                child: Text(
+                  'Oops, \n\nInternet Anda Bermasalah !! \n\nMohon Cek Internet, kemudian refresh halaman :)',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+          );
+        } else {
+          return child;
+        }
+      },
+      child: Scaffold(
+        appBar: new AppBar(
+          title: new Text('Token Listrik'),
+          elevation: 0.0,
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _token.length.toString(),
+                  style: TextStyle(
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red[200],
+                  ),
+                ),
+                SizedBox(
+                  width: 10.0,
+                )
+              ],
+            ),
+          ],
+        ),
+        body: _body(),
+        // resizeToAvoidBottomPadding: true,
       ),
-      body: _body(),
-      // resizeToAvoidBottomPadding: true,
     );
   }
 

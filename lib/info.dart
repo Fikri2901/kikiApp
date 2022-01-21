@@ -1,15 +1,17 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unused_field
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_offline/flutter_offline.dart';
+import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/login.dart';
 import 'package:kikiapp/navbarButtom.dart';
 import 'package:kikiapp/page/bayar_page.dart';
 import 'package:kikiapp/page/home_page.dart';
 import 'package:kikiapp/page/token_page.dart';
 import 'package:kikiapp/page/userHutang_page.dart';
-// import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -31,11 +33,17 @@ class _InfoState extends State<Info> {
 
   bool _switchValue = true;
 
+  koneksi() async {
+    await MongoDatabase.connect();
+    await Firebase.initializeApp();
+  }
+
   @override
   void initState() {
     super.initState();
     _refresh = EasyRefreshController();
     _panggilAdmin();
+    koneksi();
 
     _fabHeight = _initFabHeight;
   }
@@ -377,43 +385,80 @@ class _InfoState extends State<Info> {
   Widget build(BuildContext context) {
     _panelHeightOpen = MediaQuery.of(context).size.height * .45;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(
-          'Pengaturan',
-          style: TextStyle(
-            color: Colors.red[400],
-          ),
-        ),
-        centerTitle: true,
+    return OfflineBuilder(
+      connectivityBuilder: (
+        BuildContext context,
+        ConnectivityResult connectivity,
+        Widget child,
+      ) {
+        if (connectivity == ConnectivityResult.none) {
+          return Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: new AppBar(
+              title: new Text(
+                'No Internet',
+                style: TextStyle(
+                  color: Colors.red[400],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
+            ),
+            body: Container(
+              color: Colors.white,
+              child: Center(
+                child: Text(
+                  'Oops, \n\nInternet Anda Bermasalah !! \n\nMohon Cek Internet, kemudian refresh halaman :)',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+          );
+        } else {
+          return child;
+        }
+      },
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        actions: _admin == 'kikicell'
-            ? <Widget>[
-                _tombolLogout(),
-              ]
-            : null,
-      ),
-      body: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          SlidingUpPanel(
-            maxHeight: _panelHeightOpen,
-            minHeight: _panelHeightClosed,
-            // parallaxEnabled: true,
-            // parallaxOffset: .5,
-            body: _body(),
-            panelBuilder: (sc) => _panel(sc),
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(18.0),
-                topRight: Radius.circular(18.0)),
-            onPanelSlide: (double pos) => setState(() {
-              _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) +
-                  _initFabHeight;
-            }),
+        appBar: AppBar(
+          title: Text(
+            'Pengaturan',
+            style: TextStyle(
+              color: Colors.red[400],
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ],
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          actions: _admin == 'kikicell'
+              ? <Widget>[
+                  _tombolLogout(),
+                ]
+              : null,
+        ),
+        body: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            SlidingUpPanel(
+              maxHeight: _panelHeightOpen,
+              minHeight: _panelHeightClosed,
+              // parallaxEnabled: true,
+              // parallaxOffset: .5,
+              body: _body(),
+              panelBuilder: (sc) => _panel(sc),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(18.0),
+                  topRight: Radius.circular(18.0)),
+              onPanelSlide: (double pos) => setState(() {
+                _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) +
+                    _initFabHeight;
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }

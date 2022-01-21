@@ -38,9 +38,11 @@ dependencies:
   transparent_image: ^1.0.0
   sliding_clipped_nav_bar: ^2.0.1
   flutter_easyrefresh: ^2.2.1
-  fluent_appbar: ^1.0.0
   flutter_bounceable: ^1.0.2
   sliding_up_panel: ^2.0.0+1
+  overlay_support: ^1.2.1
+  shimmer_animation: ^2.1.0+1
+  flutter_offline: ^2.0.0
 
 dev_dependencies:
   flutter_test:

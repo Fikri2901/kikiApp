@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:kikiapp/models/barang.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class BarangCard extends StatelessWidget {
   const BarangCard(
@@ -34,10 +35,22 @@ class BarangCard extends StatelessWidget {
           onLongPress: onLongDelete,
           leading: CachedNetworkImage(
             imageUrl: barang.gambar,
-            placeholder: (BuildContext context, String url) => Container(
-              width: 60,
-              height: 60,
-              color: Colors.grey,
+            placeholder: (BuildContext context, String url) => Shimmer(
+              child: Container(
+                margin: const EdgeInsets.only(top: 10.0),
+                width: 60.0,
+                height: 60.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Colors.grey[400],
+                ),
+              ),
+              duration: Duration(seconds: 5),
+              interval: Duration(seconds: 5),
+              color: Colors.white,
+              colorOpacity: 0.3,
+              enabled: true,
+              direction: ShimmerDirection.fromLTRB(),
             ),
             errorWidget: _error,
           ),

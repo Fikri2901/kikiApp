@@ -1,13 +1,15 @@
 import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:intl/intl.dart';
 import 'package:kikiapp/component/userHutang_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
-import 'package:kikiapp/models/hutang.dart';
 import 'package:kikiapp/models/userHutang.dart';
-import 'package:kikiapp/page/add_userHutang_page.dart';
 import 'package:kikiapp/page/hutangUser_page.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class AllUserHutangPage extends StatefulWidget {
   AllUserHutangPage({Key key}) : super(key: key);
@@ -26,12 +28,21 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
   TextEditingController cariText = new TextEditingController();
   EasyRefreshController _refresh;
 
+  bool isLoading = false;
+
   Future<Null> getUserhutang() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Future.delayed(Duration(seconds: 2), () {});
+    await MongoDatabase.connect();
+    await Firebase.initializeApp();
     final resp = await MongoDatabase.getUserHutang();
     setState(() {
       for (Map userH in resp) {
         _userH.add(UserHutang.fromMap(userH));
       }
+      isLoading = false;
     });
   }
 
@@ -42,37 +53,88 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
     getUserhutang();
   }
 
+  Widget _shimmerUserHutang() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Material(
+        borderRadius: BorderRadius.circular(20.0),
+        elevation: 3.0,
+        color: Colors.white,
+        child: ListTile(
+          leading: Shimmer(
+            child: Container(
+              margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+              width: 60.0,
+              height: 60.0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                color: Colors.grey[400],
+              ),
+            ),
+            duration: Duration(seconds: 1),
+            interval: Duration(seconds: 1),
+            color: Colors.white,
+            colorOpacity: 0.3,
+            enabled: true,
+            direction: ShimmerDirection.fromLTRB(),
+          ),
+          title: Shimmer(
+            child: Container(
+              margin: const EdgeInsets.only(right: 80.0),
+              // width: 30.0,
+              height: 17.0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5.0),
+                color: Colors.grey[400],
+              ),
+            ),
+            duration: Duration(seconds: 1),
+            interval: Duration(seconds: 1),
+            color: Colors.white,
+            colorOpacity: 0.3,
+            enabled: true,
+            direction: ShimmerDirection.fromLTRB(),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _userHutangList() {
     return new ListView.builder(
-      itemCount: _userH.length.clamp(startIndex, endIndex),
+      itemCount: isLoading ? 9 : _userH.length.clamp(startIndex, endIndex),
       itemBuilder: (context, index) {
-        return new Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: UserHutangCardGrid(
-            userH: UserHutang.fromMap(
-              _userH[index].toMap(),
+        if (isLoading) {
+          return _shimmerUserHutang();
+        } else {
+          return new Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: UserHutangCardGrid(
+              userH: UserHutang.fromMap(
+                _userH[index].toMap(),
+              ),
+              detailUserHutang: () {
+                showDetail(
+                  UserHutang.fromMap(
+                    _userH[index].toMap(),
+                  ),
+                );
+              },
+              infoDetail: () {
+                Navigator.push(
+                  context,
+                  geserKiriHalaman(
+                    page: HutangUserPage(
+                        id_user: _userH[index].id.toJson(),
+                        nama: _userH[index].nama),
+                  ),
+                ).then(
+                  (value) => setState(() {}),
+                );
+              },
             ),
-            detailUserHutang: () {
-              showDetail(
-                UserHutang.fromMap(
-                  _userH[index].toMap(),
-                ),
-              );
-            },
-            infoDetail: () {
-              Navigator.push(
-                context,
-                geserKiriHalaman(
-                  page: HutangUserPage(
-                      id_user: _userH[index].id.toJson(),
-                      nama: _userH[index].nama),
-                ),
-              ).then(
-                (value) => setState(() {}),
-              );
-            },
-          ),
-        );
+          );
+        }
       },
     );
   }
@@ -160,7 +222,7 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
               await Future.delayed(
                 Duration(seconds: 2),
                 () {
-                  print('onRefresh');
+                  pullrestart();
                   setState(
                     () {
                       endIndex = 10;
@@ -192,15 +254,80 @@ class _AllUserHutangPageState extends State<AllUserHutangPage> {
     );
   }
 
+  pullrestart() async {
+    await MongoDatabase.connect();
+    await Firebase.initializeApp();
+    if (_userH.length > 0) {
+      print(_userH.length);
+    } else {
+      getUserhutang();
+    }
+    showSimpleNotification(
+      Text(
+        'Refresh Berhasil',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      background: Colors.green,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Buku Hutang'),
-        elevation: 0.0,
+    return OfflineBuilder(
+      connectivityBuilder: (
+        BuildContext context,
+        ConnectivityResult connectivity,
+        Widget child,
+      ) {
+        if (connectivity == ConnectivityResult.none) {
+          return Scaffold(
+            appBar: new AppBar(
+              title: new Text('No Internet'),
+              centerTitle: true,
+              elevation: 0.0,
+            ),
+            body: Container(
+              color: Colors.white,
+              child: Center(
+                child: Text(
+                  'Oops, \n\nInternet Anda Bermasalah !! \n\nMohon Cek Internet, kemudian refresh halaman :)',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+          );
+        } else {
+          return child;
+        }
+      },
+      child: Scaffold(
+        appBar: new AppBar(
+          title: new Text('Buku Hutang'),
+          elevation: 0.0,
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _userH.length.toString(),
+                  style: TextStyle(
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red[200],
+                  ),
+                ),
+                SizedBox(
+                  width: 10.0,
+                )
+              ],
+            ),
+          ],
+        ),
+        body: _body(),
+        // resizeToAvoidBottomPadding: true,
       ),
-      body: _body(),
-      // resizeToAvoidBottomPadding: true,
     );
   }
 

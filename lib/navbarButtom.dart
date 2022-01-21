@@ -5,6 +5,7 @@ import 'package:kikiapp/page/jenis_page_grid.dart';
 import 'package:sliding_clipped_nav_bar/sliding_clipped_nav_bar.dart';
 
 class NavbarButtom extends StatefulWidget {
+  static const String alamat = "/navbarbuttom";
   @override
   _NavbarButtomState createState() => _NavbarButtomState();
 }
@@ -23,7 +24,6 @@ class _NavbarButtomState extends State<NavbarButtom> {
     setState(() {
       selectedIndex = index;
     });
-    // _pageController.jumpToPage(selectedIndex);
     _pageController.animateToPage(selectedIndex,
         duration: const Duration(milliseconds: 400), curve: Curves.easeOutQuad);
   }

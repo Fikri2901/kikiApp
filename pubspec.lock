@@ -85,6 +85,34 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
+  connectivity:
+    dependency: transitive
+    description:
+      name: connectivity
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.6"
+  connectivity_for_web:
+    dependency: transitive
+    description:
+      name: connectivity_for_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0+1"
+  connectivity_macos:
+    dependency: transitive
+    description:
+      name: connectivity_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1+2"
+  connectivity_platform_interface:
+    dependency: transitive
+    description:
+      name: connectivity_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   convert:
     dependency: transitive
     description:
@@ -183,13 +211,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.10.11"
-  fluent_appbar:
-    dependency: "direct main"
-    description:
-      name: fluent_appbar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -230,6 +251,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.8.1"
+  flutter_offline:
+    dependency: "direct main"
+    description:
+      name: flutter_offline
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -338,6 +366,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
+  overlay_support:
+    dependency: "direct main"
+    description:
+      name: overlay_support
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.1"
   path:
     dependency: transitive
     description:
@@ -492,6 +527,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.2+3"
+  shimmer_animation:
+    dependency: "direct main"
+    description:
+      name: shimmer_animation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0+1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -602,6 +644,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  wifi_info_flutter:
+    dependency: transitive
+    description:
+      name: wifi_info_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
+  wifi_info_flutter_platform_interface:
+    dependency: transitive
+    description:
+      name: wifi_info_flutter_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   win32:
     dependency: transitive
     description:
@@ -632,4 +688,4 @@ packages:
     version: "2.2.1"
 sdks:
   dart: ">=2.15.0 <3.0.0"
-  flutter: ">=1.24.0"
+  flutter: ">=2.0.0"

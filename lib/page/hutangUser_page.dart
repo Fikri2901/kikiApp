@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable, non_constant_identifier_names
+// ignore_for_file: must_be_immutable, non_constant_identifier_names, unused_element
 
 import 'package:flutter/material.dart';
 import 'package:kikiapp/component/hutang_card.dart';

@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:kikiapp/component/barang_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/barang.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class AllBarangPage extends StatefulWidget {
   final String idJenis, namaJenis;
@@ -20,12 +24,21 @@ class _AllBarangPageState extends State<AllBarangPage> {
   TextEditingController cariText = new TextEditingController();
   EasyRefreshController _refresh;
 
+  bool isLoading = false;
+
   Future<Null> getBarang() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Future.delayed(Duration(seconds: 2), () {});
+    await MongoDatabase.connect();
+    await Firebase.initializeApp();
     final resp = await MongoDatabase.getBarang();
     setState(() {
       for (Map barang in resp) {
         _barang.add(Barang.fromMap(barang));
       }
+      isLoading = false;
     });
   }
 
@@ -39,28 +52,111 @@ class _AllBarangPageState extends State<AllBarangPage> {
     getBarang();
   }
 
+  Widget _shimmerBarang() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GridTile(
+        child: Material(
+          borderRadius: BorderRadius.circular(20.0),
+          color: Colors.white,
+          elevation: 5.0,
+          child: Column(
+            children: [
+              Shimmer(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 10.0),
+                  width: 100.0,
+                  height: 80.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.grey[400],
+                  ),
+                ),
+                duration: Duration(seconds: 1),
+                interval: Duration(seconds: 1),
+                color: Colors.white,
+                colorOpacity: 0.3,
+                enabled: true,
+                direction: ShimmerDirection.fromLTRB(),
+              ),
+              Expanded(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.only(top: 5.0, left: 3.0, right: 3.0),
+                  child: Column(
+                    children: [
+                      Shimmer(
+                        child: Container(
+                          width: 150.0,
+                          height: 20.0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5.0),
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                        duration: Duration(seconds: 1),
+                        interval: Duration(seconds: 1),
+                        color: Colors.white,
+                        colorOpacity: 0.3,
+                        enabled: true,
+                        direction: ShimmerDirection.fromLTRB(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0),
+                        child: Shimmer(
+                          child: Container(
+                            width: 100.0,
+                            height: 20.0,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5.0),
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                          duration: Duration(seconds: 1),
+                          interval: Duration(seconds: 1),
+                          color: Colors.white,
+                          colorOpacity: 0.3,
+                          enabled: true,
+                          direction: ShimmerDirection.fromLTRB(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _barangList() {
     return new GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
       ),
-      itemCount: _barang.length.clamp(starIndex, endIndex),
+      itemCount: isLoading ? 6 : _barang.length.clamp(starIndex, endIndex),
       itemBuilder: (context, index) {
-        return new Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: BarangCardGrid(
-            barang: Barang.fromMap(
-              _barang[index].toMap(),
+        if (isLoading) {
+          return _shimmerBarang();
+        } else {
+          return new Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: BarangCardGrid(
+              barang: Barang.fromMap(
+                _barang[index].toMap(),
+              ),
+              detailBarang: () {
+                showDetail(
+                  Barang.fromMap(
+                    _barang[index].toMap(),
+                  ),
+                );
+              },
             ),
-            detailBarang: () {
-              showDetail(
-                Barang.fromMap(
-                  _barang[index].toMap(),
-                ),
-              );
-            },
-          ),
-        );
+          );
+        }
       },
     );
   }
@@ -136,7 +232,7 @@ class _AllBarangPageState extends State<AllBarangPage> {
               await Future.delayed(
                 Duration(seconds: 2),
                 () {
-                  print('onRefresh');
+                  pullrestart();
                   setState(
                     () {
                       endIndex = 12;
@@ -168,15 +264,80 @@ class _AllBarangPageState extends State<AllBarangPage> {
     );
   }
 
+  pullrestart() async {
+    await MongoDatabase.connect();
+    await Firebase.initializeApp();
+    if (_barang.length > 0) {
+      print(_barang.length);
+    } else {
+      getBarang();
+    }
+    showSimpleNotification(
+      Text(
+        'Refresh Berhasil',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      background: Colors.green,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Barang'),
-        elevation: 0.0,
+    return OfflineBuilder(
+      connectivityBuilder: (
+        BuildContext context,
+        ConnectivityResult connectivity,
+        Widget child,
+      ) {
+        if (connectivity == ConnectivityResult.none) {
+          return Scaffold(
+            appBar: new AppBar(
+              title: new Text('No Internet'),
+              centerTitle: true,
+              elevation: 0.0,
+            ),
+            body: Container(
+              color: Colors.white,
+              child: Center(
+                child: Text(
+                  'Oops, \n\nInternet Anda Bermasalah !! \n\nMohon Cek Internet, kemudian refresh halaman :)',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+          );
+        } else {
+          return child;
+        }
+      },
+      child: Scaffold(
+        appBar: new AppBar(
+          title: new Text('Barang'),
+          elevation: 0.0,
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _barang.length.toString(),
+                  style: TextStyle(
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red[200],
+                  ),
+                ),
+                SizedBox(
+                  width: 10.0,
+                )
+              ],
+            ),
+          ],
+        ),
+        body: _body(),
+        // resizeToAvoidBottomPadding: true,
       ),
-      body: _body(),
-      // resizeToAvoidBottomPadding: true,
     );
   }
 

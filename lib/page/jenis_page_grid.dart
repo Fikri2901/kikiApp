@@ -1,11 +1,15 @@
 import 'dart:async';
+// import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:kikiapp/component/jenis_card_grid.dart';
 import 'package:kikiapp/database/database.dart';
 import 'package:kikiapp/models/jenis.dart';
 import 'package:kikiapp/page/barang_page_grid.dart';
-// import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class JenisPage extends StatefulWidget {
   JenisPage({Key key}) : super(key: key);
@@ -20,13 +24,23 @@ class _JenisPageState extends State<JenisPage> {
   TextEditingController controller = new TextEditingController();
   EasyRefreshController _refresh;
 
+  bool isLoading = false;
+
   Future<Null> getJenis() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Future.delayed(Duration(seconds: 2), () {});
+    await MongoDatabase.connect();
+    await Firebase.initializeApp();
     final resp = await MongoDatabase.getDocumentJenis();
 
     setState(() {
       for (Map jenis in resp) {
         _jenis.add(Jenis.fromMap(jenis));
       }
+
+      isLoading = false;
     });
   }
 
@@ -37,32 +51,91 @@ class _JenisPageState extends State<JenisPage> {
     getJenis();
   }
 
+  Widget _shimmerJenis() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Material(
+        borderRadius: BorderRadius.circular(15.0),
+        elevation: 5.0,
+        color: Colors.white,
+        child: Container(
+          margin: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+          child: Column(
+            children: [
+              Shimmer(
+                child: Container(
+                  padding: EdgeInsets.only(top: 10.0),
+                  width: 100.0,
+                  height: 80.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.grey[400],
+                  ),
+                ),
+                duration: Duration(seconds: 1),
+                interval: Duration(seconds: 1),
+                color: Colors.white,
+                colorOpacity: 0.3,
+                enabled: true,
+                direction: ShimmerDirection.fromLTRB(),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.only(top: 10.0, left: 3.0, right: 3.0),
+                child: Shimmer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0),
+                      color: Colors.grey[400],
+                    ),
+                    width: 100.0,
+                    height: 20.0,
+                  ),
+                  duration: Duration(seconds: 5),
+                  interval: Duration(seconds: 5),
+                  color: Colors.white,
+                  colorOpacity: 0.3,
+                  enabled: true,
+                  direction: ShimmerDirection.fromLTRB(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _jenisList() {
     return new GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
       ),
-      itemCount: _jenis.length,
+      itemCount: isLoading ? 6 : _jenis.length,
       itemBuilder: (context, index) {
-        return new Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: JenisCardGrid(
-            jenis: Jenis.fromMap(_jenis[index].toMap()),
-            txtAdmin: null,
-            onTapListBarang: () async {
-              Navigator.push(
-                context,
-                geserKiriHalaman(
-                  page: BarangPage(
-                      idJenis: _jenis[index].id.toJson(),
-                      namaJenis: _jenis[index].nama),
-                ),
-              ).then(
-                (value) => setState(() {}),
-              );
-            },
-          ),
-        );
+        if (isLoading) {
+          return _shimmerJenis();
+        } else {
+          return new Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: JenisCardGrid(
+              jenis: Jenis.fromMap(_jenis[index].toMap()),
+              txtAdmin: null,
+              onTapListBarang: () async {
+                Navigator.push(
+                  context,
+                  geserKiriHalaman(
+                    page: BarangPage(
+                        idJenis: _jenis[index].id.toJson(),
+                        namaJenis: _jenis[index].nama),
+                  ),
+                ).then(
+                  (value) => setState(() {}),
+                );
+              },
+            ),
+          );
+        }
       },
     );
   }
@@ -72,25 +145,29 @@ class _JenisPageState extends State<JenisPage> {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
       ),
-      itemCount: _searchResult.length,
+      itemCount: isLoading ? 6 : _searchResult.length,
       itemBuilder: (context, index) {
-        return new Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: JenisCardGrid(
-            jenis: Jenis.fromMap(_searchResult[index].toMap()),
-            txtAdmin: null,
-            onTapListBarang: () async {
-              Navigator.push(
-                context,
-                geserKiriHalaman(
-                  page: BarangPage(
-                      idJenis: _searchResult[index].id.toJson(),
-                      namaJenis: _searchResult[index].nama),
-                ),
-              ).then((value) => setState(() {}));
-            },
-          ),
-        );
+        if (isLoading) {
+          return _shimmerJenis();
+        } else {
+          return new Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: JenisCardGrid(
+              jenis: Jenis.fromMap(_searchResult[index].toMap()),
+              txtAdmin: null,
+              onTapListBarang: () async {
+                Navigator.push(
+                  context,
+                  geserKiriHalaman(
+                    page: BarangPage(
+                        idJenis: _searchResult[index].id.toJson(),
+                        namaJenis: _searchResult[index].nama),
+                  ),
+                ).then((value) => setState(() {}));
+              },
+            ),
+          );
+        }
       },
     );
   }
@@ -135,33 +212,18 @@ class _JenisPageState extends State<JenisPage> {
               color: Colors.white,
               backgroundColor: Colors.red[400],
             ),
-            // footer: MaterialFooter(),
             onRefresh: () async {
               await Future.delayed(
                 Duration(seconds: 2),
-                () {
-                  print('onRefresh');
-
+                () async {
+                  pullrestart();
                   setState(
-                    () {
-                      _jenis;
-                    },
+                    () {},
                   );
                   _refresh.resetLoadState();
                 },
               );
             },
-            // onLoad: () async {
-            //   await Future.delayed(
-            //     Duration(seconds: 2),
-            //     () {
-            //       setState(
-            //         () {},
-            //       );
-            //       _refresh.finishLoad();
-            //     },
-            //   );
-            // },
             child: _searchResult.length != 0 || controller.text.isNotEmpty
                 ? _hasilCari()
                 : _jenisList(),
@@ -173,14 +235,78 @@ class _JenisPageState extends State<JenisPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Barang'),
-        centerTitle: true,
-        elevation: 0.0,
+    return OfflineBuilder(
+      connectivityBuilder: (
+        BuildContext context,
+        ConnectivityResult connectivity,
+        Widget child,
+      ) {
+        if (connectivity == ConnectivityResult.none) {
+          return Scaffold(
+            appBar: new AppBar(
+              title: new Text('No Internet'),
+              centerTitle: true,
+              elevation: 0.0,
+            ),
+            body: Container(
+              color: Colors.white,
+              child: Center(
+                child: Text(
+                  'Oops, \n\nInternet Anda Bermasalah !! \n\nMohon Cek Internet, kemudian refresh halaman :)',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+          );
+        } else {
+          return child;
+        }
+      },
+      child: Scaffold(
+        appBar: new AppBar(
+          title: new Text('Jenis Barang'),
+          centerTitle: true,
+          elevation: 0.0,
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _jenis.length.toString(),
+                  style: TextStyle(
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red[200],
+                  ),
+                ),
+                SizedBox(
+                  width: 10.0,
+                )
+              ],
+            ),
+          ],
+        ),
+        body: _body(),
       ),
-      body: _body(),
-      // resizeToAvoidBottomPadding: true,
+    );
+  }
+
+  pullrestart() async {
+    await MongoDatabase.connect();
+    await Firebase.initializeApp();
+    if (_jenis.length > 0) {
+      print(_jenis.length);
+    } else {
+      getJenis();
+    }
+    showSimpleNotification(
+      Text(
+        'Refresh Berhasil',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      background: Colors.green,
     );
   }
 

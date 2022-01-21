@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:kikiapp/models/barang.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class BarangCardGrid extends StatelessWidget {
   BarangCardGrid({this.barang, this.detailBarang});
@@ -10,8 +11,24 @@ class BarangCardGrid extends StatelessWidget {
   final Function detailBarang;
 
   Widget _loader(BuildContext context, String url) {
-    return const Center(
-      child: CircularProgressIndicator(),
+    return Center(
+      child: Shimmer(
+        child: Container(
+          margin: const EdgeInsets.only(top: 10.0),
+          width: 100.0,
+          height: 100.0,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            color: Colors.grey[400],
+          ),
+        ),
+        duration: Duration(seconds: 5),
+        interval: Duration(seconds: 5),
+        color: Colors.white,
+        colorOpacity: 0.3,
+        enabled: true,
+        direction: ShimmerDirection.fromLTRB(),
+      ),
     );
   }
 
